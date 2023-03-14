@@ -35,9 +35,11 @@ export function useAuth() {
 
 export const firestore = firebase.firestore()
 const messagesCollection = firestore.collection('messages')
+const inventoryCollection = firestore.collection('inventory')
 const messagesRef = firebase.firestore().collection("messages");
 const cardRef = firebase.firestore().collection("inventory");
 const messagesQuery = messagesCollection.orderBy('createdAt', 'desc').limit(100)
+const invetoryQuery = inventoryCollection.orderBy('createdAt', 'desc')
 
 export function useChat() {
   const messages = ref([])
@@ -46,6 +48,7 @@ export function useChat() {
                .map(doc => ({ id: doc.id, ...doc.data() }))
                .reverse()
            })
+          
            onUnmounted(unsubscribe)
            const cards = []
            fetch('https://api.jsonbin.io/v3/b/63f927aeebd26539d084bb26/latest')
@@ -111,6 +114,6 @@ export function useChat() {
               });
           };
 
-  return { messages, sendMessage, messagesRef, getCard};
+  return { messages, sendMessage, messagesRef, getCard };
 }
 export const currentUser = auth.user;
