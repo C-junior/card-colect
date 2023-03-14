@@ -10,15 +10,13 @@
     </div>
     <!-- <inventory /> -->
     <div class="card-container">
-    <div v-for="(message, index) in messages" :key="index" class="card-row">
-      <div @click="pegar">
-      <h2>{{ message.cardName }}</h2>
-      <br>
-      <img :src="message.cardImgUrl" alt="card image">    
-    </div>
-        
-     
-    </div>
+      <div v-for="(message, index) in messages" :key="index" class="card-row">
+  <div @click="pegar(message)">
+    <h2>{{ message.cardName }}</h2>
+    <br>
+    <img :src="message.cardImg" alt="card image">    
+  </div>
+</div>
   </div>
     <br> <button @click="send"> Drop </button>
    
@@ -49,7 +47,7 @@ export default {
   setup() {
     const { user, isLogin } = useAuth()
     const messages = ref([]);
-    const {  sendMessage, messagesRef, getCard} = useChat()
+    const {  sendMessage, messagesRef, getCard } = useChat()
     const bottom = ref(null)
     watch(
       messages,
@@ -64,9 +62,10 @@ export default {
     const send = () => {
       sendMessage(message.value)
     }
-    const pegar = () => {
-      getCard(InventoryItem.value)
-    }
+    const pegar = async (message) => {
+  const newDocId = await getCard(message);
+  console.log("o valor é", newDocId);
+};
    
 
     // Retrieve the messages from Firestore

@@ -72,7 +72,7 @@ export function useChat() {
              selectedCards.forEach(card => {
                const message = {
                  cardName: card.name,
-                cardImgUrl: card.image,
+                cardImg: card.image,
                  userName: displayName,
                  image: image,
                  userId: uid,
@@ -84,24 +84,32 @@ export function useChat() {
                  .catch(error => console.error(`Error adding message: ${error}`));
              });
            }
-  const getCard = (card) => {
-    const { photoURL, uid, displayName } = user.value;
-    const inventoryItem = {
-      userName: displayName,
-      userId: uid,
-      userPhotoURL: photoURL,
-      imgUrl: card.image,
-      cardImg: card.image,
-      cardName: card.name,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    };
-    cardRef
-      .add(inventoryItem)
-      .then((docRef) =>
-        console.log(`Inventory item written with ID: ${docRef.id}`)
-      )
-      .catch((error) => console.error(`Error adding inventory item: ${error}`));
-  };
+           const getCard = (message) => {
+            const { photoURL, uid, displayName } = user.value;
+            if (!message.cardImg) {
+              console.error(`Error: card ${message.cardName} does not have a valid image`);
+              return;
+            }
+            const inventoryItem = {    
+              userName: displayName,
+              userId: uid,
+              userPhotoURL: photoURL,
+              cardImg: message.cardImg,
+              cardName: message.cardName,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+            
+            cardRef
+              .add(inventoryItem)
+              .then((docRef) => {
+                console.log(`Inventory item written with ID: ${docRef.id}`);
+                return docRef.id; // Return the ID of the new inventory item
+              })
+              .catch((error) => {
+                console.error(`Error adding inventory item: ${error}`);
+                return null; // Return null if there was an error
+              });
+          };
 
   return { messages, sendMessage, messagesRef, getCard};
 }
