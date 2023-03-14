@@ -26,9 +26,9 @@
 
 <script>
 import Navbar from '../components/Login.vue';
-import Card from '../components/Card.vue';
-import Inventory from '../components/Inventory.vue';
-import HelloWorld from '../components/HelloWorld.vue'
+// import Card from '../components/Card.vue';
+// import Inventory from '../components/Inventory.vue';
+// import HelloWorld from '../components/HelloWorld.vue'
 import { ref, watch, nextTick } from 'vue'
   import { useAuth, useChat } from '@/firebase'
 import { currentUser } from '@/firebase';
@@ -36,8 +36,7 @@ import { currentUser } from '@/firebase';
 export default {
   components: {
     Navbar,
-    Card,
-    Inventory,
+
   },
   data() {
     return {
