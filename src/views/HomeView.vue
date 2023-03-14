@@ -19,7 +19,7 @@
   </div>
 </div>
   </div>
-    <br> <button @click="send"> Drop </button>
+    <br> <button @click="send" :disabled="isDisabled"> Drop </button>
    
   </div>
 </template>
@@ -47,6 +47,16 @@ export default {
     const { user, isLogin } = useAuth()
     const messages = ref([]);
     const {  sendMessage, messagesRef, getCard } = useChat()
+    const isDisabled = ref(false);
+
+const handleButtonClick = () => {
+  isDisabled.value = true;
+
+  setTimeout(() => {
+    isDisabled.value = false;
+  }, 3 * 60 * 1000);
+};
+
     const bottom = ref(null)
     watch(
       messages,
@@ -60,6 +70,7 @@ export default {
     const message = ref('')
     const send = () => {
       sendMessage(message.value)
+      handleButtonClick()
     }
     const pegar = async (message) => {
   const newDocId = await getCard(message);
@@ -76,7 +87,8 @@ export default {
     });
 
   
-    return { user, isLogin, messages, bottom, message, send , pegar }
+    return { user, isLogin, messages, bottom, message, send , pegar, isDisabled, handleButtonClick,
+     }
   }
 }
 
