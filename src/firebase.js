@@ -7,13 +7,14 @@ import { ref, onUnmounted, computed } from 'vue'
 
 // Replace with your own Firebase config
 const firebaseConfig = {
-   apiKey: "AIzaSyALxDocM3rzVBaDHZQZ3i5zIJt3klJqH-o",
+  apiKey: "AIzaSyALxDocM3rzVBaDHZQZ3i5zIJt3klJqH-o",
   authDomain: "card-colect.firebaseapp.com",
   projectId: "card-colect",
   storageBucket: "card-colect.appspot.com",
   messagingSenderId: "1065828021976",
   appId: "1:1065828021976:web:eb3ec67726cd9f8b6849ad"
 };
+
 
 firebase.initializeApp(firebaseConfig);
 
