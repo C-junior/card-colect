@@ -114,7 +114,9 @@ export function useChat() {
                 return null; // Return null if there was an error
               });
           };
+          
+const inventoryRef = firebase.firestore().collection('inventory');
 
-  return { messages, sendMessage, messagesRef, getCard };
+  return { messages, sendMessage, messagesRef, getCard, inventoryRef };
 }
 export const currentUser = auth.user;
