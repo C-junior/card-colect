@@ -4,6 +4,11 @@
     <navbar />
     <div v-if="isLogin"> <img :src="user.photoURL" width="20" alt="perfil"> {{ user.displayName }}
       <br><br>
+
+        <div>
+           <p> Parabens!! Voce pegou a carta ( {{ messages[0].cardId}} )  {{ messages[0].cardName}}</p>
+        </div>
+      <br><br>
     </div>
     <br> <button @click="send" :disabled="isDisabled"> Drop </button> 
     <br><br>
@@ -40,6 +45,7 @@ export default {
     const { sendMessage, messagesRef, getCard,  inventoryRef } = useChat()
     const bottom = ref(null)
     const message = ref('')
+    const uinventory = ref([])
     
     
     // Disable the button for 3 minutes after a click
@@ -51,7 +57,7 @@ export default {
   setTimeout(() => {
     isDisabled.value = false;
     console.log('Button enabled:', isDisabled.value);
-  }, 1 * 60 * 1000);
+  }, 1 * 10 * 1000);
 };
     watch(user, () => {
       if (user.value) {
@@ -61,21 +67,21 @@ export default {
     
     const pegar = async (message) => {
   // Check if the message has already been added to the inventory
-  const inventorySnapshot = await inventoryRef.where('cardName', '==', message.cardName).get();
+  const inventorySnapshot = await inventoryRef.where('cardId', '==', message.cardId).get();
   if (inventorySnapshot.size > 0) {
     console.log('Message has already been added to the inventory.');
     return;
   }
 
   // Check if the message has been disabled for 1 minute or more
-  if (message.disabledAt && (new Date() - message.disabledAt.toDate()) >= (1 * 60 * 1000)) {
+  if (message.createdAt && (new Date() - message.createdAt.toDate()) >= (1 * 10 * 1000)) {
     message.disabled = true;
   }
 
   // Disable the card if it hasn't already been disabled
   if (!message.disabled) {
     // Add the message to the inventory
-    await inventoryRef.add({ cardName: message.cardName });
+   // await inventoryRef.add({ cardId: message.cardId });
 
     // Disable the card
     message.disabled = true;
@@ -115,7 +121,7 @@ export default {
       debouncedScrollToBottom();
     });
   
-    return { user, isLogin, messages, bottom, message, send , pegar, isDisabled };
+    return { user, isLogin, messages, bottom, message, send , pegar, isDisabled, inventoryRef };
   }
 }
 </script>

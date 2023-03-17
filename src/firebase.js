@@ -1,6 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+import { nanoid } from 'nanoid';
 
 
 import { ref, onUnmounted, computed } from 'vue'
@@ -77,6 +78,7 @@ export function useChat() {
                const message = {
                  cardName: card.name,
                 cardImg: card.image,
+                cardId: nanoid(8),
                  userName: displayName,
                  image: image,
                  userId: uid,
@@ -100,6 +102,7 @@ export function useChat() {
               userPhotoURL: photoURL,
               cardImg: message.cardImg,
               cardName: message.cardName,
+              cardId: message.cardId,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
             
