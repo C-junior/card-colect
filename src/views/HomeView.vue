@@ -23,7 +23,7 @@
       </div>
     </div>
     
-    <div class="bottom"></div>
+ 
   </div>
 </template>
 
@@ -31,7 +31,7 @@
 import Navbar from '../components/Login.vue';
 import { ref, computed, watch } from 'vue'
 import { useAuth, useChat } from '@/firebase'
-import { debounce } from 'lodash';
+
 
 
 export default {
@@ -43,10 +43,7 @@ export default {
     const { user, isLogin } = useAuth()
     const messages = ref([]);
     const { sendMessage, messagesRef, getCard,  inventoryRef } = useChat()
-    const bottom = ref(null)
     const message = ref('')
-    const uinventory = ref([])
-    
     
     // Disable the button for 3 minutes after a click
     const isDisabled = ref(false)
@@ -74,7 +71,7 @@ export default {
   }
 
   // Check if the message has been disabled for 1 minute or more
-  if (message.createdAt && (new Date() - message.createdAt.toDate()) >= (1 * 10 * 1000)) {
+  if (message.createdAt && (new Date() - message.createdAt.toDate()) >= (1 * 20 * 1000)) {
     message.disabled = true;
   }
 
@@ -92,36 +89,33 @@ export default {
     
     // Send a message
     const send = async () => {
-  await sendMessage(message.value, { disabledAt: new Date() });
+      const fiveMinutesAgo = new Date(Date.now() - (5 * 60 * 1000));
+  const userMessagesQuery = messagesRef.where('userId', '==', user.value.uid);
+  const recentMessages = await userMessagesQuery
+    .where('createdAt', '>', fiveMinutesAgo)
+    .limit(3)
+    .get();
+
+  // Check if the user has sent more than 3 messages within the last 5 minutes
+  if (recentMessages.size >= 3) {
+    console.log('You have sent too many messages. Please wait before sending another message. ', fiveMinutesAgo);
+    return;
+  }
+  await sendMessage(message.value);
   handleButtonClick();
   message.value = ''; // Clear the input field after sending
 };
-    function debounce(func, wait) {
-  let timeout;
-  return function() {
-    const context = this;
-    const args = arguments;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), wait);
-  };
-}
-    
-    // Scroll to the bottom of the chat
-    const scrollToBottom = () => {
-      bottom.value?.scrollIntoView({ behavior: 'smooth' })
-    };
-    const debouncedScrollToBottom = debounce(scrollToBottom, 50);
+
     
     // Retrieve the messages from Firestore
     messagesRef.orderBy('createdAt', 'desc').onSnapshot(querySnapshot => {
       messages.value = [];
       querySnapshot.forEach(doc => {
         messages.value.push(doc.data());
-      });
-      debouncedScrollToBottom();
+      });    
     });
   
-    return { user, isLogin, messages, bottom, message, send , pegar, isDisabled, inventoryRef };
+    return { user, isLogin, messages,  message, send , pegar,  inventoryRef };
   }
 }
 </script>
