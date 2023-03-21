@@ -2,11 +2,14 @@
   <div>
     <h2>Inventory</h2>
     <div class="container-inv">
-      <ul>
-        <li class="inventory" v-for="(item, index) in userInventory" :key="index" >
-          <img :src="item.cardImg" alt="card image">
-          <p> {{ item.cardName }} </p>
-          <button @click="deleteItem(item)">Delete</button> <!-- Add a button to delete the item -->
+      <ul class="card-list">
+        <li class="card-item" v-for="(item, index) in userInventory" :key="index">
+          <div class="card-container">
+            <img :src="item.cardImg" alt="card image">
+            <p class="card-name">{{ item.cardName }}</p>
+            <button @click="deleteItem(item)">Delete</button> <!-- Add a button to delete the item -->
+          </div>
+         
         </li>
       </ul>
     </div>
@@ -54,7 +57,7 @@ export default {
 </script>
   
   <style scoped>
-  .inventory{
+  /* .inventory{
     display: block;
   text-align: center;
   width: 210px;
@@ -71,5 +74,55 @@ export default {
     display: inline-flex;
     flex-direction: column 1fr 1fr 1fr;
     flex-wrap: wrap;
- }
+ } */
+ .card-list {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .card-item {
+    flex: 1 1 20%;
+    margin: 10px;
+    border: 2px solid rgb(199, 8, 8);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.5s;
+    cursor: pointer;
+  }
+  
+  .card-item:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    width: 200px;
+  }
+  
+  .card-name {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  .card-name::before,
+  .card-name::after {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: #ccc;
+    width: 50%;
+    margin: 5px 0;
+  }
+  
+ img {
+    height: 150px;
+  }
 </style>
