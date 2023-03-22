@@ -10,7 +10,7 @@
         </div>
       <br><br>
     </div>
-    <br> <button @click="send" :disabled="isDisabled"> Drop </button> 
+    <br> <button @click="send" > Drop </button> 
     <br><br>
     <div class="card-container">
       
@@ -46,21 +46,7 @@ export default {
     const message = ref('')
     
     // Disable the button for 3 minutes after a click
-    const isDisabled = ref(false)
-    const handleButtonClick = () => {
-  isDisabled.value = true;
-  console.log('Button disabled:', isDisabled.value);
-
-  setTimeout(() => {
-    isDisabled.value = false;
-    console.log('Button enabled:', isDisabled.value);
-  }, 1 * 10 * 1000);
-};
-    watch(user, () => {
-      if (user.value) {
-        handleButtonClick();
-      }
-    });
+  
     
     const pegar = async (message) => {
   // Check if the message has already been added to the inventory
@@ -89,7 +75,7 @@ export default {
     
     // Send a message
     const send = async () => {
-      const fiveMinutesAgo = new Date(Date.now() - (5 * 60 * 1000));
+      const fiveMinutesAgo = new Date(Date.now() - (1 * 10 * 1000));
   const userMessagesQuery = messagesRef.where('userId', '==', user.value.uid);
   const recentMessages = await userMessagesQuery
     .where('createdAt', '>', fiveMinutesAgo)
@@ -102,7 +88,6 @@ export default {
     return;
   }
   await sendMessage(message.value);
-  handleButtonClick();
   message.value = ''; // Clear the input field after sending
 };
 
@@ -114,6 +99,7 @@ export default {
         messages.value.push(doc.data());
       });    
     });
+    
   
     return { user, isLogin, messages,  message, send , pegar,  inventoryRef };
   }

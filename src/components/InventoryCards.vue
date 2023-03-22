@@ -39,19 +39,34 @@ export default {
   },
   methods: {
     async deleteItem(item) {
-      const collectionName = "inventory"; // Replace with the name of your Firestore collection
-      const documentId = item.id; // Use the document ID to delete the item
-      try {
-        const db = firebase.firestore();
-        const docRef = db.collection(collectionName).doc(documentId);
-        await docRef.delete();
-        console.log(`Document with ID ${documentId} successfully deleted from Firestore`);
-        // Remove the deleted item from the userInventory array
-        this.userInventory = this.userInventory.filter((invItem) => invItem.id !== item.id);
-      } catch (error) {
-        console.error("Error deleting document: ", error);
+  const collectionName = "inventory";
+  const documentId = item.id;
+  try {
+    const db = firebase.firestore();
+    const docRef = db.collection(collectionName).doc(documentId);
+    const deletedItem = await docRef.get();
+    const gold = Math.floor(Math.random() * 100) + 1; // generate random amount of gold between 1 to 100
+    const data = deletedItem.data();
+    const { userId } = data;
+    const userRef = db.collection("userProfiles").doc(userId); // assuming you have a collection named "users"
+    await db.runTransaction(async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+      if (!userDoc.exists) {
+        throw "User does not exist!";
       }
-    }
+      const { gold: currentGold = 0 } = userDoc.data();
+      const newGold = currentGold + gold;
+      transaction.update(userRef, { gold: newGold });
+      transaction.delete(docRef);
+      console.log(`Document with ID ${documentId} successfully deleted from Firestore`);
+      this.userInventory = this.userInventory.filter((invItem) => invItem.id !== item.id);
+    });
+  } catch (error) {
+    console.error("Error deleting document: ", error);
+  }
+},
+
+    
   }
 }
 </script>
@@ -84,7 +99,6 @@ export default {
   }
   
   .card-item {
-    flex: 1 1 20%;
     margin: 10px;
     border: 2px solid rgb(199, 8, 8);
     border-radius: 10px;
