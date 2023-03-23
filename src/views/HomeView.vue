@@ -6,7 +6,7 @@
       <br><br>
 
         <div>
-           <p> Parabens!! Voce pegou a carta ( {{ messages[0].cardId}} )  {{ messages[0].cardName}}</p>
+           <!-- <p> Parabens!! Voce pegou a carta ( {{ messages[0].cardId}} )  {{ messages[0].cardName}}</p> -->
         </div>
       <br><br>
     </div>
@@ -16,8 +16,9 @@
       
       <div v-for="(message, index) in messages" :key="index" class="card-row" :disabled="message.disabled" :class="{ 'disabled': message.disabled }">
         <div @click="pegar(message)" >
-          <h2>{{ message.cardName }}</h2>
+          <p class="cardname">{{ message.cardName }}</p>
           <br>
+          <img class="frame" src="../assets/frame.png " alt="">
           <img :src="message.cardImg" alt="card image">
         </div>
       </div>
@@ -94,10 +95,11 @@ export default {
     
     // Retrieve the messages from Firestore
     messagesRef.orderBy('createdAt', 'desc').onSnapshot(querySnapshot => {
-      messages.value = [];
+     const newMessages = [];
       querySnapshot.forEach(doc => {
-        messages.value.push(doc.data());
+        newMessages.push(doc.data())
       });    
+      messages.value = newMessages.splice(0, 6);
     });
     
   
@@ -106,28 +108,68 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .card-container{
   margin: auto;
-  width: 680px;
+  max-width: 850px;
   
   display: flex;
   flex-wrap: wrap;
+  place-items: center;
 }
 .card-row {
   display: block;
   text-align: center;
-  width: 200px;
+  width: 250px;
   margin-left: 20px;
   margin-bottom: 20px;
-  border: 3px red solid;
   border-radius: 12px;
   overflow:hidden;
 }
-.card-row img{
-  width: 200px;
+@media (max-width: 769px) {
+  .card-row {
+    width: calc(33.33% - 20px);
+    margin-left: 20px;
+    margin-bottom: 20px;
+  }
 }
 
+@media (max-width: 426px) {
+  .card-row {
+    width: 90px;
+    margin-left: 10px;
+  }
+
+  .card-row img {
+    width: 90px !important;
+    height: 126px !important;
+  }
+}
+
+.card-row img{
+ width: 200px;
+ height: 281px;
+}
+
+.frame{
+  position: absolute;
+  filter: hue-rotate(180deg);
+
+  z-index: 10;
+}
+.cardname{
+position: absolute;
+z-index: 11;
+bottom: 0px;
+left: 50%;
+transform: translate(-50%, -50%);
+text-align: center;
+color: black;
+text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+/* background: rgb(2,0,36);
+background: linear-gradient(0deg, rgb(47, 109, 138) 0%, rgba(45,45,50,1) 63%, rgba(0,212,255,0.15449929971988796) 100%);
+width: 200px; */
+}
 .disabled {
   filter: grayscale(100%);
   background-color: aliceblue;

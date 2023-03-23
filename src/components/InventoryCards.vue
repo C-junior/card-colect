@@ -1,13 +1,23 @@
 <template>
   <div>
     <h2>Inventory</h2>
+        <div class="modal" v-if="showDeleteConfirmation">
+  <div class="modal-content">
+    <h2>Are you sure you want to delete "{{nameForDeletedItem }}"?</h2>
+    <p>You will receive {{ goldForDeletedItem }} gold.</p>
+    <div>
+      <button @click="deleteItemConfirmed">Delete</button>
+      <button @click="cancelDelete">Cancel</button>
+    </div>
+  </div>
+</div>
     <div class="container-inv">
       <ul class="card-list">
         <li class="card-item" v-for="(item, index) in userInventory" :key="index">
           <div class="card-container">
             <img :src="item.cardImg" alt="card image">
             <p class="card-name">{{ item.cardName }}</p>
-            <button @click="deleteItem(item)">Delete</button> <!-- Add a button to delete the item -->
+            <button @click="confirmDelete(item)">Delete</button> <!-- Add a button to delete the item -->
           </div>
          
         </li>
@@ -23,7 +33,9 @@ import 'firebase/firestore';
 export default {
   data() {
     return {
-      userInventory: []
+    userInventory: [],
+    deleteItem: null,
+    showDeleteConfirmation: false,
     }
   },
   created() {
@@ -38,36 +50,50 @@ export default {
     }
   },
   methods: {
-    async deleteItem(item) {
+  async confirmDelete(item) {
+    this.deleteItem = item; // store the item to be deleted
+    this.showDeleteConfirmation = true; // show the confirmation dialog
+  },
+ 
+  async deleteItemConfirmed() {
+  // delete the item and update the user's gold
+  const item = this.deleteItem;
   const collectionName = "inventory";
   const documentId = item.id;
   try {
     const db = firebase.firestore();
     const docRef = db.collection(collectionName).doc(documentId);
     const deletedItem = await docRef.get();
-    const gold = Math.floor(Math.random() * 100) + 1; // generate random amount of gold between 1 to 100
     const data = deletedItem.data();
-    const { userId } = data;
-    const userRef = db.collection("userProfiles").doc(userId); // assuming you have a collection named "users"
+    const { userId, gold: itemGold } = data;
+    const userRef = db.collection("userProfiles").doc(userId);
     await db.runTransaction(async (transaction) => {
       const userDoc = await transaction.get(userRef);
       if (!userDoc.exists) {
         throw "User does not exist!";
       }
       const { gold: currentGold = 0 } = userDoc.data();
-      const newGold = currentGold + gold;
+      const newGold = currentGold + itemGold;
       transaction.update(userRef, { gold: newGold });
       transaction.delete(docRef);
       console.log(`Document with ID ${documentId} successfully deleted from Firestore`);
       this.userInventory = this.userInventory.filter((invItem) => invItem.id !== item.id);
     });
+    this.showDeleteConfirmation = false;
   } catch (error) {
     console.error("Error deleting document: ", error);
   }
+}
 },
-
-    
-  }
+computed: {
+  goldForDeletedItem() {
+    return this.deleteItem.gold;
+   
+  },
+  nameForDeletedItem() {
+    return this.deleteItem.cardName;
+  },
+},
 }
 </script>
   

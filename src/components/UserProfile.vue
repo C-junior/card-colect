@@ -8,11 +8,11 @@
       <div class="profile-stats">
         <div class="stat-item">
           <img src="../assets/logo.svg" alt="send-count-icon" class="stat-icon">
-          <p class="stat-text">Send Count: {{ sendCount }}</p>
+          <p class="stat-text">Drops: {{ sendCount }}</p>
         </div>
         <div class="stat-item">
           <img src="../assets/logo.svg" alt="get-count-icon" class="stat-icon">
-          <p class="stat-text">Get Count: {{ getCount }}</p>
+          <p class="stat-text">Grabs: {{ getCount }}</p>
         </div>
         <div class="stat-item">
           <img src="../assets/coin.png" alt="gold-icon" class="stat-icon">
@@ -68,6 +68,7 @@
     border: 2px solid #ccc;
     border-radius: 10px;
     background-color: rgb(73, 18, 18);
+    margin-top: 46px;
   }
   
   .user-profile {

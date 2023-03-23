@@ -19,10 +19,7 @@ export default{
 </script>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
+
 
 .logo {
   display: block;
@@ -30,12 +27,14 @@ header {
 }
 
 .nav-links {
-  width: 100vh;
+  width: 100%;
   font-size: 12px;
   text-align: center;
-  position: absolute;
+  position: relative;
   top: 0;
   z-index: 999;
+  margin: auto;
+
 }
 
 .nav-links a.router-link-exact-active {

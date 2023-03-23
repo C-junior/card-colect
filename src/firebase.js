@@ -68,7 +68,7 @@ const messagesCollection = firestore.collection('messages')
 const inventoryCollection = firestore.collection('inventory')
 const messagesRef = firebase.firestore().collection("messages");
 const cardRef = firebase.firestore().collection("inventory");
-const messagesQuery = messagesCollection.orderBy('createdAt', 'desc').limit(100)
+const messagesQuery = messagesCollection.orderBy('createdAt', 'desc').limit(12)
 const invetoryQuery = inventoryCollection.orderBy('createdAt', 'desc')
 
 export function useChat() {
@@ -92,57 +92,93 @@ export function useChat() {
            });
         
            const { user, isLogin } = useAuth()
-          const sendMessage = image => {
-  if (!isLogin.value) return;
-  const selectedCards = [];
-  while (selectedCards.length < 3) {
-    const card = cards[Math.floor(Math.random() * cards.length)];
-    if (!selectedCards.includes(card)) {
-      selectedCards.push(card);
-    }
-  }
-  const { photoURL, uid, displayName } = user.value;
-  selectedCards.forEach(card => {
-    const message = {
-      cardName: card.name,
-      cardImg: card.image,
-      cardId: nanoid(8),
-      userName: displayName,
-      image: image,
-      userId: uid,
-      userPhotoURL: photoURL,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    messagesRef.add(message)
-      .then(docRef => {
-        console.log(`Message written with ID: ${docRef.id}`);
-        // Update send count of the user
-        const userDocRef = firestore.collection('userProfiles').doc(uid);
-        userDocRef.get().then(doc => {
-          if (doc.exists) {
-            const sendCount = doc.data().sendCount || 0;
-            userDocRef.update({ sendCount: sendCount + 1 });
-          } else {
-            userDocRef.set({ sendCount: 1 });
-          }
-        });
-      })
-      .catch(error => console.error(`Error adding message: ${error}`));
-  });
-};
+           const sendMessage = image => {
+            if (!isLogin.value) return;
+            const selectedCards = [];
+            while (selectedCards.length < 3) {
+              const card = cards[Math.floor(Math.random() * cards.length)];
+              if (!selectedCards.includes(card)) {
+                selectedCards.push(card);
+              }
+            }
+            const { photoURL, uid, displayName } = user.value;
+            selectedCards.forEach(card => {
+              const rarity = (() => {
+                switch (card.weapontype) {
+                  case 'Sword':
+                    return 'super-rare';
+                  case 'Axe':
+                    return 'rare';
+                  case 'Lance':
+                    return 'uncommon';
+                  default:
+                    return 'common';
+                }
+              })();
+            
+              const { cardName, image: cardImg, weapontype } = card;
+              const message = {
+                cardName: card.name,
+                cardImg: card.image,
+                cardId: nanoid(8),
+                weaponType: card.weapontype,
+                rarity,
+                userName: displayName,
+                image,
+                userId: uid,
+                userPhotoURL: photoURL,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              };
+              messagesRef.add(message)
+                .then(docRef => {
+                  console.log(`Message written with ID: ${docRef.id}`);
+                  // Update send count of the user
+                  const userDocRef = firestore.collection('userProfiles').doc(uid);
+                  userDocRef.get().then(doc => {
+                    if (doc.exists) {
+                      const sendCount = doc.data().sendCount || 0;
+                      userDocRef.update({ sendCount: sendCount + 1 });
+                    } else {
+                      userDocRef.set({ sendCount: 1 });
+                    }
+                  });
+                })
+                .catch(error => console.error(`Error adding message: ${error}`));
+            });
+          };
            const getCard = (message) => {
             const { photoURL, uid, displayName } = user.value;
             if (!message.cardImg) {
               console.error(`Error: card ${message.cardName} does not have a valid image`);
               return;
             }
-            const inventoryItem = {    
+        
+          
+            // Randomly assign gold based on rarity
+            let gold;
+            switch (message.rarity) {
+              case "super-rare":
+                gold = Math.floor(Math.random() * 100) + 200;
+                break;
+              case "rare":
+                gold = Math.floor(Math.random() * 50) + 100;
+                break;
+              case "uncommon":
+                gold = Math.floor(Math.random() * 20) + 50;
+                break;
+              default:
+                gold = Math.floor(Math.random() * 10) + 10;
+            }
+          
+            const inventoryItem = {
               userName: displayName,
               userId: uid,
               userPhotoURL: photoURL,
               cardImg: message.cardImg,
               cardName: message.cardName,
               cardId: message.cardId,
+              rarity: message.rarity,
+              gold: gold,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
             
