@@ -1,8 +1,6 @@
 <template>
-    <nav>
-        <h1>Gatcha Game</h1>       
-      
-    </nav>
+   <div class="btn-sign">
+   
     <div v-if="isLogin" class="login">
     <button @click="signOut" > Sign Out</button>
     </div>
@@ -10,6 +8,7 @@
         <button @click="signIn">Sign In</button>
     
     </div>
+</div>
     </template>
     <script>
        import { useAuth, currentUser} from '@/firebase'
@@ -29,5 +28,10 @@
         *{
             text-align:center;
             margin: 10px;
+        }
+        .btn-sign {
+            width: 89%;
+            display: flex;
+            justify-content: end;
         }
     </style>

@@ -1,9 +1,10 @@
 @import './base.css';
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap');
 
 #app {
-  max-width: 1280px;
+ 
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
 
   font-weight: normal;
 }
@@ -21,7 +22,7 @@ a,
   }
 }
 
-@media (min-width: 1024px) {
+/* @media (min-width: 1024px) {
   body {
     display: flex;
     place-items: start;
@@ -33,4 +34,4 @@ a,
   
     padding: 0 2rem;
   }
-}
+} */

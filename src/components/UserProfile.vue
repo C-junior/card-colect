@@ -22,31 +22,41 @@
     </div>
   </template> -->
   <template>
-    <div class="profile-container">
-      <div v-if="isLogin" class="user-profile">
-        <div class="profile-header">
-          <img :src="user.photoURL" class="profile-picture" alt="perfil">
-          <div class="profile-name-container">
-            <h2 class="profile-name">{{ user.displayName }}</h2>
-            <div class="profile-online-indicator"></div>
-          </div>
-        </div>
-        <div class="profile-stats">
-          <div class="stat-item">
-            <img src="../assets/logo.svg" alt="send-count-icon" class="stat-icon">
-            <p class="stat-text">Drops: {{ sendCount }}</p>
-          </div>
-          <div class="stat-item">
-            <img src="../assets/logo.svg" alt="get-count-icon" class="stat-icon">
-            <p class="stat-text">Grabs: {{ getCount }}</p>
-          </div>
-          <div class="stat-item">
-            <img src="../assets/coin.png" alt="gold-icon" class="stat-icon">
-            <p class="stat-text">Gold: {{ gold }}</p>
-          </div>
+    <div class="container-profile">
+   
+
+    <div class="profile-card">
+      <div v-if="isLogin" >
+        <div class="">         
+            <p class="card-name">{{ user.displayName }}</p><br>
+            <img :src="user.photoURL" class="card-picture" alt="perfil">
         </div>
       </div>
+
+<div class="card-details">
+  <img src="../assets/detail.svg" />
+  <img class="logo-card" src="../assets/logogg.png" />
+  <div class="stats-player">
+    <div class="stat-item">
+          <img src="../assets/drop.svg" alt="send-count-icon" class="stat-svg">
+          <p class="stat-text">{{ sendCount }}</p>
+     </div>
+     <div class="stat-item">
+          <img src="../assets/grab.svg" alt="send-count-icon" class="stat-svg">
+          <p class="stat-text"> {{ getCount }}</p>
+        </div>
+        <div class="stat-item">
+            <img src="../assets/gold.svg" alt="gold-icon" class="stat-svg">
+            <p class="stat-text"> {{ gold }}</p>
+          </div>
+        <div class="stat-item">
+          <img src="../assets/gem.svg" alt="send-count-icon" class="stat-svg">
+          <p class="stat-text"> 0 </p>
+        </div>
     </div>
+</div>
+    </div>
+  </div>
   </template>
 
   <script>
@@ -88,9 +98,59 @@
   }
   </script>
 
-<style>
+<style scoped>
+
+.profile-card{
+  height: 484px;
+  width: 260px;
+  background-color: black;
+  border: #691818 solid 10px;
+  margin: auto;
+  box-shadow: 1px 8px 6px 2px rgba(245, 244, 244, 0.733);
+  border-radius: 45px;
+}
+
+.card-name{
+  background-color: #b60c0c;
+  padding: 2px 8px;
+  margin: 8px auto;
+  border-radius: 8px;
+  text-align: center;
+  width: fit-content;
+}
+.card-picture{
+width: 240px;
+position: relative;
+top:-20px;
+}
+.stats-player{
+  position: relative;
+  top: -195px;
+  left: 25px;
+}
+
+.card-details{
+  /* Rectangle 11 */
+
+position: absolute;
+width: 246px;
+height: 236px;
+left: -15px;
+top: 230px;
+
+
+}
+
+.logo-card{
+  position: absolute;
+  top:10px;
+  left: calc(50% - 18px);
+  width: 60px;
+}
 .profile-container {
   display: flex;
+  width: fit-content;
+  margin: auto;
   flex-direction: column;
   align-items: center;
   margin-top: 15%!important; 
@@ -126,7 +186,7 @@
 
 .profile-name-container {
   display: flex;
-  align-items: center;
+  align-items: start;
 }
 
 .profile-name {
@@ -156,7 +216,7 @@
 .stat-item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .stat-icon {
@@ -165,7 +225,10 @@
 }
 
 .stat-text {
+  font-family: 'Black Ops One', cursive;
   font-size: 16px;
+  padding-left: 10px;
+  padding-bottom: 8px;
   margin: 0;
 }
 
@@ -230,3 +293,99 @@
     font-weight: bold;
   }
   </style> -->
+
+ <!-- 
+  profile-funcional
+ .profile-container {
+    display: flex;
+    width: fit-content;
+    margin: auto;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15%!important; 
+    border: solid 2px white;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    animation: slide-up 0.5s ease-out;
+  }
+  
+  .user-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background-color: #691818;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-picture {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 20px;
+  }
+  
+  .profile-name-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-name {
+    font-size: 24px;
+    margin: 0;
+  }
+  
+  .profile-online-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: green;
+    margin-left: 10px;
+  }
+  
+  .profile-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 8px;
+    border-top: 2px solid rgb(73, 3, 3);
+    border-bottom: 2px solid  rgb(73, 3, 3);
+    width: 90%;
+  }
+  
+  .stat-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .stat-icon {
+    width: 20px;
+    margin-right: 10px;
+  }
+  
+  .stat-text {
+    font-size: 16px;
+    margin: 0;
+  }
+  
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+  
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  } -->

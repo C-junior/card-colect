@@ -2,15 +2,13 @@
 <template>
   <div>
     <navbar />
-    <div v-if="isLogin"> <img :src="user.photoURL" width="20" alt="perfil"> {{ user.displayName }}
-      <br><br>
-
-        <div>
-           <!-- <p> Parabens!! Voce pegou a carta ( {{ messages[0].cardId}} )  {{ messages[0].cardName}}</p> -->
-        </div>
-      <br><br>
+    <div class="profile-btn" v-if="isLogin"> <img :src="user.photoURL" width="20" alt="perfil"> <h2> {{ user.displayName }}</h2>
+     
     </div>
-    <br> <button @click="send" > Drop </button> 
+    <br>
+    <img  class="dropbtn" src="../assets/btn.svg" alt="" @click="send">
+
+
     <br><br>
     <div class="card-container">
       
@@ -110,9 +108,9 @@ export default {
 
 <style scoped>
 .card-container{
-  margin: auto;
+  margin: auto !important;
+  width: 90%;
   max-width: 850px;
-  
   display: flex;
   flex-wrap: wrap;
   place-items: center;
@@ -174,4 +172,24 @@ width: 200px; */
   filter: grayscale(100%);
   background-color: aliceblue;
 }
+.dropbtn{
+  margin: auto;
+  display: block;
+}
+.profile-btn{
+  width: 90%;
+  display: flex;
+  justify-content: flex-end;  
+  flex-direction: column;
+  align-items: flex-end; 
+}
+
+.profile-btn img{
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+ margin-right: 35px;
+}
+
+
 </style>
