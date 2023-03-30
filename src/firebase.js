@@ -178,7 +178,7 @@ export function useChat() {
               cardName: message.cardName,
               cardId: message.cardId,
               rarity: message.rarity,
-              gold: gold,
+              burngold: gold,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
             

@@ -14,7 +14,8 @@
   <div class="nav-links">
     <router-link to="/">Home</router-link> |
     <router-link to="/about">Inventory</router-link> |
-    <router-link to="/profile">Profile</router-link>
+    <router-link to="/profile">Profile</router-link> |
+    <router-link to="/marketplace">Card Market</router-link>
   </div>
   <router-view/>
 </template>
@@ -109,9 +110,7 @@ right: 0px;
 .nav-border {
   width: 81%;
   margin: auto;
-  border-top: 18px solid #e7e3e3;
-  border-left: 7px solid transparent; 
-  border-right: 7px solid transparent; 
+ 
 }
 .nav-links a.router-link-exact-active {
   color: rgb(44, 1, 1)

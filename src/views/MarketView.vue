@@ -1,15 +1,15 @@
 <script>
-import UserProfile from '../components/UserProfile.vue'
+import MarketPlace from '../components/MarketPlace.vue'
 
 export default {
    components:{
-    UserProfile
+    MarketPlace
    }
 }
 </script>
 
 <template>
   <main>
-    <UserProfile  />
+    <MarketPlace  />
   </main>
 </template>

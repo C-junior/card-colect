@@ -86,7 +86,7 @@
             const userData = doc.data();
             sendCount.value = userData.sendCount || 0;
             getCount.value = userData.getCount || 0;
-            gold.value = userData.gold || 0;
+            gold.value = userData.burngold + userData.gold || 0;
           }).catch((error) => {
             console.error('Error retrieving user data: ', error);
           });
