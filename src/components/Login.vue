@@ -2,10 +2,10 @@
    <div class="btn-sign">
    
     <div v-if="isLogin" class="login">
-    <button @click="signOut" > Sign Out</button>
+    <button class="btn btn-outline-danger" @click="signOut" > Sign Out</button>
     </div>
     <div v-else >
-        <button @click="signIn">Sign In</button>
+        <button class="btn btn-outline-danger" @click="signIn">Sign In</button>
     
     </div>
 </div>

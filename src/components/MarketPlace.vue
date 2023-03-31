@@ -1,6 +1,6 @@
 <template>
     <div class="container-market">
-      <h1>Market</h1>
+      <h1 class="title-page">Market</h1>
       <ul class="card-list">
         <li class="card-item" v-for="(item, index) in marketItems" :key="index">
           <div class="card-container">
@@ -73,6 +73,9 @@
   </script>
   
   <style scoped>
+   .title-page{
+  text-align: center;
+ }
   .market-items {
     margin-top: 20px;
   }
@@ -83,6 +86,8 @@
     margin: 0;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+    
   }
   
   .card-item {

@@ -1,29 +1,25 @@
 <template>
-  <div class="modal" v-if="show">
+  <div class="modal-market">
     <div class="modal-content">
-      <h2>{{ title }}</h2>
-      <div class="modal-options">
-        <label>
-          <input type="radio" v-model="selectedOption" value="option1">
-          Option 1
-        </label>
-        <label>
-          <input type="radio" v-model="selectedOption" value="option2">
-          Option 2
-        </label>
+      <h2>Add item to market</h2>
+      <div class="form-group">
+        <label for="item-price">Price:</label>
+        <input type="number" id="item-price" v-model="price" min="0">
       </div>
-      <div class="modal-input">
-        <label>Value:</label>
-        <input type="number" v-model="value">
+      <div class="form-group">
+        <label for="item-currency">Currency:</label>
+        <select id="item-currency" v-model="currency">
+          <option value="gold">Gold</option>
+          <option value="gems">Gems</option>
+        </select>
       </div>
-      <div class="modal-buttons">
-        <button class="modal-cancel" @click="cancel">Cancel</button>
-        <button class="modal-submit" @click="submit">Submit</button>
+      <div class="button-container">
+        <button @click="cancel">Cancel</button>
+        <button @click="submit">Submit</button>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 // export default {
 //   props: {

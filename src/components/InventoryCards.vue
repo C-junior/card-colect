@@ -1,60 +1,82 @@
 <template>
   <div>
    
-    <h2>Inventory</h2>
-        <div class="modal" v-if="showDeleteConfirmation">
-  <div class="modal-content">
-    <h2>Are you sure you want to delete "{{nameForDeletedItem }}"?</h2>
-    <p>You will receive {{ goldForDeletedItem }} gold.</p>
-    <div>
-      <button @click="deleteItemConfirmed">Delete</button>
-      <button @click="cancelDelete">Cancel</button>
-    </div>
-  </div>
-</div>
+    <h2 class="title-page">Inventory</h2>
+    
+
     <div class="container-inv">
       <ul class="card-list">
         <li class="card-item" v-for="(item, index) in userInventory" :key="index">
           <div class="card-container">
             <img :src="item.cardImg" alt="card image">
             <p class="card-name">{{ item.cardName }}</p>
-            <button @click="confirmDelete(item)">Delete</button> <!-- Add a button to delete the item -->
-            <button @click="addToMarket(item)">Add to Market</button>
+            <button class="btn btn-outline-danger mb-2" @click="confirmDelete(item)" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button> <!-- Add a button to delete the item -->
+            <button class="btn bg-black text-white" @click="selectedItem = item" data-bs-toggle="modal" data-bs-target="#priceModal">Add to Market</button>
+
           </div>
          
         </li>
       </ul>
     </div> 
+<!-- Modal delete -->
+    <div class="modalDelete" v-if="showDeleteConfirmation">
+          <div class="modal fade " id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+  <div class="modal-content bg-black bg-gradient">
+    <h2>Are you sure you want to delete "{{nameForDeletedItem }}"?</h2>
+    <p>You will receive {{ goldForDeletedItem }} gold.</p>
     <div>
-    <button @click="showModal = true">Open Modal</button>
-    <modal
-      :show="showModal"
-      title="Select an option and enter a value"
-      @cancel="showModal = false"
-      @submit="handleModalSubmit"
-    ></modal>
+      <button @click="deleteItemConfirmed" data-bs-dismiss="modal">Delete</button>
+      <button data-bs-dismiss="modal" @click="cancelDelete">Cancel</button>
+    </div>
   </div>
+</div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade " id="priceModal" tabindex="-1" aria-labelledby="priceModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content bg-black bg-gradient">
+      <div class="modal-header">
+        <h2 class="modal-title text-white fs-5 " id="priceModalLabel">Enter the Price for {{  }}  </h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <select class="form-select" size="3" aria-label="size 3 select example" v-model="currencyCard">
+          <option selected>Select the currency</option>
+          <option value="gold">Gold</option>
+          <option value="gems">Gems</option>
+        </select>
+        <input type="text" v-model="priceCard">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" @click="addToMarket(selectedItem)" class="btn btn-primary" data-bs-dismiss="modal">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
   </div>
 </template>
 <script>
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import Modal from "./ModalMarket.vue";
+import {reactive} from 'vue'
 
 export default {
-  components: {
-    Modal,
-  },
+  name: 'AboutView',
   data() {
     return {
-      userInventory: [],
+      userInventory: reactive([]),
       deleteItem: null,
       showDeleteConfirmation: false,
       newItem: null,
       showNewItemDialog: false,
-      newItemPrice: 0,
-      newItemPriceType: 'gold',
-      showModal: false,
+      priceCard: '',
+      currencyCard: "gold",
+      selectedItem: null,
+      searchTerm: "",
+      searchResults: []
     }
   },
   created() {
@@ -68,7 +90,7 @@ export default {
       });
     }
   },
-  methods: {
+  methods: { 
     async confirmDelete(item) {
       this.deleteItem = item; // store the item to be deleted
       this.showDeleteConfirmation = true; // show the confirmation dialog
@@ -103,63 +125,95 @@ export default {
         console.error("Error deleting document: ", error);
       }
     },
-
     async addToMarket(item) {
-  const db = firebase.firestore();
-  const user = firebase.auth().currentUser;
-  const itemName = item.cardName;
-  
-  // Ask the user for the price and currency tirar quando modal funcionar , começa aki
-  const price = prompt(`Enter a price for ${itemName}:`);
-  if (price === null) {
-    // User clicked "Cancel" button
-    return;
-  }
-  const currency = prompt(`Select a currency for the price (gold or gems):`);
-  if (currency === null) {
-    // User clicked "Cancel" button
-    return;
-  }
-  
-  // Validate the price and currency termina antes ou dps daqui
-  const parsedPrice = parseInt(price, 10);
-  if (isNaN(parsedPrice) || parsedPrice < 0) {
-    alert("Invalid price. Please enter a positive number.");
-    return;
-  }
-  const currencies = ['gold', 'gems'];
-  if (!currencies.includes(currency.toLowerCase())) {
-    alert("Invalid currency. Please enter either gold or gems.");
-    return;
-  }
-  
-  try {
-    // Add the item to the market collection
-    await db.collection("market").add({...item,
-      userId: user.uid,
-      price: parsedPrice,
-      currency: currency.toLowerCase(),
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-    
-    // Remove the item from the user's inventory collection
-    const inventoryItem = await db.collection("inventory").where("userId", "==", user.uid)
-      .where("cardName", "==", itemName).limit(1).get();
-    if (!inventoryItem.empty) {
-      await inventoryItem.docs[0].ref.delete();
-    }
-    
-    alert(`${itemName} has been added to the market for ${parsedPrice} ${currency}.`);
-  } catch (error) {
-    console.error("Error adding document: ", error);
-    alert("Failed to add item to market. Please try again later.");
-  }
-},
-handleModalSubmit(data) {
-      // Handle the modal submission here
-      console.log(data);
-      this.showModal = false;
+      const db = firebase.firestore();
+      const user = firebase.auth().currentUser;
+      const itemName = item.cardName;
+      
+      // const existingItem = this.marketItems.find((marketItem) => {
+      //   return marketItem.cardName === itemName;
+      // });
+      // if (existingItem) {
+      //   alert(`${itemName} is already in the market.`);
+      //   return;
+      // }
+      
+      // Ask the user for the price and currency
+      const price = this.priceCard
+      if (price === null) {
+        // User clicked "Cancel" button
+        return;
+      }
+      const currency = this.currencyCard
+      if (currency === null) {
+        // User clicked "Cancel" button
+        return;
+      }
+      // Validate the price and currency
+      const parsedPrice = parseInt(price, 10);
+      if (isNaN(parsedPrice) || parsedPrice < 0) {
+        alert("Invalid price. Please enter a positive number.");
+        return;
+      }
+      const currencies = ['gold', 'gems'];
+      if (!currencies.includes(currency.toLowerCase())) {
+        alert("Invalid currency. Please enter either gold or gems.");
+        return;
+      }
+      
+      try {
+        // Add the item to the market collection
+        await db.collection("market").add({...item,
+          userId: user.uid,
+          price: parsedPrice,
+          currency: currency.toLowerCase(),
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+        
+        // Remove the item from the user's inventory collection
+        const inventoryItem = await db.collection("inventory").where("userId", "==", user.uid)
+          .where("cardName", "==", itemName).limit(1).get();
+        if (!inventoryItem.empty) {
+          await inventoryItem.docs[0].ref.delete();
+          this.userInventory = this.userInventory.filter((invItem) => invItem.id !== item.id);
+        }
+        
+        // alert(`${itemName} has been added to the market for ${parsedPrice} ${currency}.`);
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        alert("Failed to add item to market. Please try again later.");
+      }
     },
+
+    confirmDelete(item) {
+      this.deleteItem = item;
+      this.showDeleteConfirmation = true;
+    },
+
+    async deleteItemFromInventory() {
+      const db = firebase.firestore();
+      const user = firebase.auth().currentUser;
+
+      if (!this.deleteItem || !user) {
+        return;
+      }
+
+      try {
+        const inventoryItem = await db.collection("inventory").doc(this.deleteItem.id).delete();
+        this.showDeleteConfirmation = false;
+        this.deleteItem = null;
+        alert(`Item "${this.deleteItem.cardName}" has been deleted from your inventory.`);
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+        alert("Failed to delete item from inventory. Please try again later.");
+      }
+    },
+    searchCards(searchTerm) {
+      this.searchResults = this.userInventory.filter(item => {
+        const regex = new RegExp(searchTerm, 'gi');
+        return item.cardName.match(regex) || item.rarity.match(regex);
+      });
+    }
   },
   computed: {
     goldForDeletedItem() {
@@ -168,10 +222,12 @@ handleModalSubmit(data) {
     nameForDeletedItem() {
       return this.deleteItem.cardName;
     },
+    nameForSelectedItem() {
+      return this.selectedItem.cardName;
+    }
   },
 }
 </script>
-
 
 <!-- <script>
 import firebase from 'firebase/app';
@@ -283,12 +339,22 @@ export default {
     flex-direction: column 1fr 1fr 1fr;
     flex-wrap: wrap;
  } */
+
+ .container-inv{
+  max-width: 1200px;
+  display: flex;
+  margin: auto;
+ }
+ .title-page{
+  text-align: center;
+ }
  .card-list {
     display: flex;
     flex-wrap: wrap;
     list-style: none;
     margin: 0;
     padding: 0;
+    justify-content: center;
   }
   
   .card-item {
