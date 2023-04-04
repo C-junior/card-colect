@@ -80,16 +80,23 @@ export function useChat() {
            })
           
            onUnmounted(unsubscribe)
-           const cards = []
-           fetch('https://api.jsonbin.io/v3/b/63f927aeebd26539d084bb26/latest')
-           .then(response => response.json())
-           .then(data => {
-             console.log(data.record.characters); // log the data object to the console
-             cards.push(...data.record.characters);
-           })
-           .catch(error => {
-             console.error(error);
-           });
+           const naruto = 'https://api.jsonbin.io/v3/b/642c817dc0e7653a059dc7b1';
+           //const fefates = 'https://api.jsonbin.io/v3/b/63f927aeebd26539d084bb26/latest';
+           const cards = [];
+           
+           Promise.all([
+             fetch(naruto).then(response => response.json()),
+            // fetch(fefates).then(response => response.json())
+           ])
+             .then(data => {
+               // Concatenate the character arrays from both sources
+               cards.push(...data[0].record.characters);
+              //  cards.push(...data[0].record.characters, ...data[1].record.characters);
+               console.log(cards); // log the merged array to the console
+             })
+             .catch(error => {
+               console.error(error);
+             });
         
            const { user, isLogin } = useAuth()
            const sendMessage = image => {
@@ -103,25 +110,13 @@ export function useChat() {
             }
             const { photoURL, uid, displayName } = user.value;
             selectedCards.forEach(card => {
-              const rarity = (() => {
-                switch (card.weapontype) {
-                  case 'Sword':
-                    return 'super-rare';
-                  case 'Axe':
-                    return 'rare';
-                  case 'Lance':
-                    return 'uncommon';
-                  default:
-                    return 'common';
-                }
-              })();
+              const rarity = card.rarity;
             
-              const { cardName, image: cardImg, weapontype } = card;
+              const { cardName, image: cardImg } = card;
               const message = {
                 cardName: card.name,
                 cardImg: card.image,
                 cardId: nanoid(8),
-                weaponType: card.weapontype,
                 rarity,
                 userName: displayName,
                 image,
@@ -157,17 +152,23 @@ export function useChat() {
             // Randomly assign gold based on rarity
             let gold;
             switch (message.rarity) {
+              case "legendary":
+                gold = Math.floor(Math.random() * 100) + 120;
+                break;
+                case "epic":
+                  gold = Math.floor(Math.random() * 80) + 80;
+                  break;
               case "super-rare":
-                gold = Math.floor(Math.random() * 100) + 200;
+                gold = Math.floor(Math.random() * 40) + 60;
                 break;
               case "rare":
-                gold = Math.floor(Math.random() * 50) + 100;
+                gold = Math.floor(Math.random() * 30) + 40;
                 break;
               case "uncommon":
-                gold = Math.floor(Math.random() * 20) + 50;
+                gold = Math.floor(Math.random() * 20) + 20;
                 break;
               default:
-                gold = Math.floor(Math.random() * 10) + 10;
+                gold = Math.floor(Math.random() * 10) + 2;
             }
           
             const inventoryItem = {

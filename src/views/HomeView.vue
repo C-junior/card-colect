@@ -16,7 +16,12 @@
         <div @click="pegar(message)" >
           <p class="cardname">{{ message.cardName }}</p>
           <br>
-          <img class="frame" src="../assets/frame.png " alt="">
+          <img v-if="message.rarity === 'legendary'" class="frame" src="../assets/frame-legendary.png " alt="">
+          <img v-if="message.rarity === 'epic'" class="frame" src="../assets/frame-epics.png " alt="">
+          <img v-if="message.rarity === 'super-rare'" class="frame" src="../assets/frame-super-rare.png " alt="">
+          <img v-if="message.rarity === 'rare'" class="frame" src="../assets/frame-rare.png " alt="">
+          <img v-if="message.rarity === 'uncommon'" class="frame" src="../assets/frame-uncommon.png " alt="">
+          <img v-if="message.rarity === 'common'" class="frame" src="../assets/frame-common.png " alt="">
           <img :src="message.cardImg" alt="card image">
         </div>
       </div>
@@ -146,13 +151,12 @@ export default {
 
 .card-row img{
  width: 200px;
- height: 281px;
+ height: 345.45px;
 }
 
 .frame{
   position: absolute;
-  filter: hue-rotate(180deg);
-
+  filter: hue-rotate(0deg);
   z-index: 10;
 }
 .cardname{
