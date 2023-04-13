@@ -81,17 +81,18 @@ export function useChat() {
           
            onUnmounted(unsubscribe)
            const naruto = 'https://api.jsonbin.io/v3/b/642c817dc0e7653a059dc7b1';
+           const shingeki = 'https://api.jsonbin.io/v3/b/64385b2fc0e7653a05a3bf79';
            //const fefates = 'https://api.jsonbin.io/v3/b/63f927aeebd26539d084bb26/latest';
            const cards = [];
            
            Promise.all([
              fetch(naruto).then(response => response.json()),
-            // fetch(fefates).then(response => response.json())
+             fetch(shingeki).then(response => response.json())
            ])
              .then(data => {
                // Concatenate the character arrays from both sources
-               cards.push(...data[0].record.characters);
-              //  cards.push(...data[0].record.characters, ...data[1].record.characters);
+              // cards.push(...data[0].record.characters);
+               cards.push(...data[0].record.characters, ...data[1].record.characters);
                console.log(cards); // log the merged array to the console
              })
              .catch(error => {
@@ -99,15 +100,34 @@ export function useChat() {
              });
         
            const { user, isLogin } = useAuth()
+           const rarities = {
+  common: 30,         // 1/21 chance
+  uncommon: 20,       // 2/21 chance
+  rare: 10,           // 4/21 chance
+  'super-rare': 6,   // 6/21 chance
+  epic: 4,           // 7/21 chance
+  legendary: 1       // 1/21 chance
+};
+
            const sendMessage = image => {
             if (!isLogin.value) return;
             const selectedCards = [];
-            while (selectedCards.length < 3) {
-              const card = cards[Math.floor(Math.random() * cards.length)];
-              if (!selectedCards.includes(card)) {
-                selectedCards.push(card);
-              }
-            }
+  const totalWeight = Object.values(rarities).reduce((acc, val) => acc + val, 0);
+  while (selectedCards.length < 3) {
+    const rand = Math.random() * totalWeight;
+    let acc = 0;
+    for (const [rarity, weight] of Object.entries(rarities)) {
+      acc += weight;
+      if (rand <= acc) {
+        const cardsOfRarity = cards.filter(card => card.rarity === rarity);
+        const card = cardsOfRarity[Math.floor(Math.random() * cardsOfRarity.length)];
+        if (!selectedCards.includes(card)) {
+          selectedCards.push(card);
+        }
+        break;
+      }
+    }
+  }
             const { photoURL, uid, displayName } = user.value;
             selectedCards.forEach(card => {
               const rarity = card.rarity;
@@ -141,13 +161,19 @@ export function useChat() {
                 .catch(error => console.error(`Error adding message: ${error}`));
             });
           };
-           const getCard = (message) => {
+          let lastGetTime = null;
+
+          const getCard = (message) => {
             const { photoURL, uid, displayName } = user.value;
             if (!message.cardImg) {
               console.error(`Error: card ${message.cardName} does not have a valid image`);
               return;
             }
-        
+          
+            if (lastGetTime && Date.now() - lastGetTime < 5 * 60 * 1000) {
+              console.log(`Cannot get another card yet`);
+              return;
+            }
           
             // Randomly assign gold based on rarity
             let gold;
@@ -155,9 +181,9 @@ export function useChat() {
               case "legendary":
                 gold = Math.floor(Math.random() * 100) + 120;
                 break;
-                case "epic":
-                  gold = Math.floor(Math.random() * 80) + 80;
-                  break;
+              case "epic":
+                gold = Math.floor(Math.random() * 80) + 80;
+                break;
               case "super-rare":
                 gold = Math.floor(Math.random() * 40) + 60;
                 break;
@@ -182,7 +208,7 @@ export function useChat() {
               burngold: gold,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
-            
+          
             cardRef
               .add(inventoryItem)
               .then((docRef) => {
@@ -199,6 +225,7 @@ export function useChat() {
                   }
                 )
                 .catch(error => console.error(`Error adding message: ${error}`));
+                lastGetTime = Date.now(); // Set the last get time to now
                 return docRef.id; // Return the ID of the new inventory item
               })
               .catch((error) => {

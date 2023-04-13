@@ -161,16 +161,17 @@ export default {
 }
 .cardname{
 position: absolute;
+font-size: 0.7rem;
 z-index: 11;
-bottom: 0px;
+bottom: -10px;
 left: 50%;
 transform: translate(-50%, -50%);
 text-align: center;
-color: black;
-text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
-/* background: rgb(2,0,36);
-background: linear-gradient(0deg, rgb(47, 109, 138) 0%, rgba(45,45,50,1) 63%, rgba(0,212,255,0.15449929971988796) 100%);
-width: 200px; */
+color: white;
+padding: 5px;
+ background: rgb(2,0,36);
+ background: linear-gradient(360deg, #191919 -42.86%, rgba(28, 27, 27, 0.753) 85.25%, rgba(29, 29, 29, 0) 146.43%);
+width: 200px; 
 }
 .disabled {
   filter: grayscale(100%);

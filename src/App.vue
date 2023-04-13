@@ -11,12 +11,22 @@
 
 </header>
 <div class="nav-border"></div>
+<div v-if="!isMobile()">
   <div class="nav-links">
     <router-link to="/">Home</router-link> |
     <router-link to="/about">Inventory</router-link> |
     <router-link to="/profile">Profile</router-link> |
     <router-link to="/marketplace">Card Market</router-link>
   </div>
+</div>
+<div v-else>
+  <div class="nav-links-mobile">
+    <router-link to="/"><img src="./assets/home-icon.svg" alt=""></router-link> 
+    <router-link to="/about"><img src="./assets/backpack-icon.svg" alt=""></router-link> 
+    <router-link to="/profile"><img src="./assets/profile-icon.svg" alt=""></router-link> 
+    <router-link to="/marketplace"><img src="./assets/market-icon.svg" alt=""></router-link>
+  </div>
+</div>
   <router-view/>
 </template>
 
@@ -27,12 +37,51 @@ import {  RouterView } from 'vue-router'
 export default{
   components:{
     HomeView
-  }
+  },
+  methods: {
+ isMobile() {
+   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+     return true
+   } else {
+     return false
+   }
+ }
+}
 }
 </script>
 
 <style scoped>
 
+.nav-links-mobile {
+  z-index: 999;
+  position: fixed;
+  margin: auto;
+  width: 100%;
+  bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .nav-links-mobile img {
+    height: 36px;
+  }
+  
+  .nav-links-mobile a {
+    display: inline-flex;
+   
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    width: 50px;
+    margin: 0 10px;
+    font-size: 24px;
+    color: #000;
+    background-color: rgb(126, 8, 8);
+    border-radius: 12%;
+  }
 
 .logocenter {
   display: block;
