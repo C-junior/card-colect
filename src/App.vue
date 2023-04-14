@@ -15,16 +15,17 @@
   <div class="nav-links">
     <router-link to="/">Home</router-link> |
     <router-link to="/about">Inventory</router-link> |
-    <router-link to="/profile">Profile</router-link> |
-    <router-link to="/marketplace">Card Market</router-link>
+    <router-link to="/marketplace">Card Market</router-link> |
+    <router-link to="/profile">Profile</router-link> 
+    
   </div>
 </div>
 <div v-else>
   <div class="nav-links-mobile">
     <router-link to="/"><img src="./assets/home-icon.svg" alt=""></router-link> 
-    <router-link to="/about"><img src="./assets/backpack-icon.svg" alt=""></router-link> 
-    <router-link to="/profile"><img src="./assets/profile-icon.svg" alt=""></router-link> 
+    <router-link to="/about"><img src="./assets/backpack-icon.svg" alt=""></router-link>   
     <router-link to="/marketplace"><img src="./assets/market-icon.svg" alt=""></router-link>
+    <router-link to="/profile"><img src="./assets/profile-icon.svg" alt=""></router-link> 
   </div>
 </div>
   <router-view/>
@@ -57,16 +58,21 @@ export default{
   position: fixed;
   margin: auto;
   width: 100%;
-  bottom: 10px;
+  bottom: 0px;
     display: flex;
     justify-content: center;
     align-self: center;
     align-items: center;
     margin-top: 20px;
+    background-color:#860E0E;
+    border-radius: 12px 12px 0 0;
+    padding: 5px;    
+    border-top: #c0bfbf solid 3px;
   }
 
   .nav-links-mobile img {
     height: 36px;
+    color:white;
   }
   
   .nav-links-mobile a {
@@ -79,8 +85,12 @@ export default{
     margin: 0 10px;
     font-size: 24px;
     color: #000;
-    background-color: rgb(126, 8, 8);
+    background-color: rgb(20, 20, 20);
     border-radius: 12%;
+  }
+
+  .nav-links-mobile a:focus{
+    background-color: #a39191;
   }
 
 .logocenter {

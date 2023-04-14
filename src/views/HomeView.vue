@@ -1,11 +1,11 @@
 
 <template>
   <div>
+    <div class="top-nav">
     <navbar />
-    <div class="profile-btn" v-if="isLogin"> <img :src="user.photoURL" width="20" alt="perfil"> <h2> {{ user.displayName }}</h2>
-     
+    <div class="profile-btn" v-if="isLogin">  <h5> {{ user.displayName }}</h5>    
+    </div> 
     </div>
-    <br>
     <img  class="dropbtn" src="../assets/btn.svg" alt="" @click="send">
 
 
@@ -79,7 +79,7 @@ export default {
     
     // Send a message
     const send = async () => {
-      const fiveMinutesAgo = new Date(Date.now() - (1 * 10 * 1000));
+      const fiveMinutesAgo = new Date(Date.now() - (2 * 10 * 1000));
   const userMessagesQuery = messagesRef.where('userId', '==', user.value.uid);
   const recentMessages = await userMessagesQuery
     .where('createdAt', '>', fiveMinutesAgo)
@@ -112,6 +112,19 @@ export default {
 </script>
 
 <style scoped>
+.top-nav {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  place-items: center;
+  place-content: center;
+  width: 100%;  
+}
+.top-nav h5{
+  text-align: center;
+  margin: auto;
+  padding-left: 1px;
+}
+
 .card-container{
   margin: auto !important;
   width: 90%;
@@ -163,7 +176,7 @@ export default {
 position: absolute;
 font-size: 0.7rem;
 z-index: 11;
-bottom: -10px;
+bottom: -25px;
 left: 50%;
 transform: translate(-50%, -50%);
 text-align: center;

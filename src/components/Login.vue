@@ -2,11 +2,10 @@
    <div class="btn-sign">
    
     <div v-if="isLogin" class="login">
-    <button class="btn btn-outline-danger" @click="signOut" > Sign Out</button>
+    <button class="btn btn-outline-danger" @click="signOut" > SignOut</button>
     </div>
     <div v-else >
-        <button class="btn btn-outline-danger" @click="signIn">Sign In</button>
-    
+        <button class="btn btn-outline-danger" @click="signIn">SignIn</button>    
     </div>
 </div>
     </template>
@@ -27,7 +26,7 @@
     <style scoped>
         *{
             text-align:center;
-            margin: 10px;
+            margin: 5px;
         }
         .btn-sign {
             width: 89%;

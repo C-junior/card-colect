@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import { nanoid } from 'nanoid';
-
+import LRU from 'lru-cache';
 
 import { ref, onUnmounted, computed } from 'vue'
 
@@ -20,19 +20,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 export const auth = firebase.auth();
-// export function useAuth() {
-//     const user = ref(null)
-//     const unsubscribe = auth.onAuthStateChanged(_user => (user.value = _user))
-//     onUnmounted(unsubscribe)
-//     const isLogin = computed(() => user.value !== null)
-  
-//     const signIn = async () => {
-//       const googleProvider = new firebase.auth.GoogleAuthProvider()
-//       await auth.signInWithPopup(googleProvider)
-//     }
-//     const signOut = () => auth.signOut()
-  
-//     return { user, isLogin, signIn, signOut }
+
 //   }
  // try create a profile code
   export function useAuth() {
@@ -70,16 +58,20 @@ const messagesRef = firebase.firestore().collection("messages");
 const cardRef = firebase.firestore().collection("inventory");
 const messagesQuery = messagesCollection.orderBy('createdAt', 'desc').limit(12)
 const invetoryQuery = inventoryCollection.orderBy('createdAt', 'desc')
+const cache = new LRU({
+  max: 100,
+  maxAge: 1000 * 60 * 5, // 5 minutes
+});
 
 export function useChat() {
-  const messages = ref([])
- const unsubscribe = messagesQuery.onSnapshot(snapshot => {
-            messages.value = snapshot.docs
-               .map(doc => ({ id: doc.id, ...doc.data() }))
-               .reverse()
-           })
-          
-           onUnmounted(unsubscribe)
+  const messages = ref(cache.get('messages') || []);
+  const unsubscribe = messagesQuery.onSnapshot(snapshot => {
+    messages.value = snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() }))
+      .reverse();
+    cache.set('messages', messages.value);
+  });
+  onUnmounted(unsubscribe);
            const naruto = 'https://api.jsonbin.io/v3/b/642c817dc0e7653a059dc7b1';
            const shingeki = 'https://api.jsonbin.io/v3/b/64385b2fc0e7653a05a3bf79';
            //const fefates = 'https://api.jsonbin.io/v3/b/63f927aeebd26539d084bb26/latest';
@@ -161,78 +153,105 @@ export function useChat() {
                 .catch(error => console.error(`Error adding message: ${error}`));
             });
           };
-          let lastGetTime = null;
-
-          const getCard = (message) => {
-            const { photoURL, uid, displayName } = user.value;
-            if (!message.cardImg) {
-              console.error(`Error: card ${message.cardName} does not have a valid image`);
-              return;
-            }
+          const updateUserProfile = (uid) => {
+            const userDocRef = firestore.collection('userProfiles').doc(uid);
           
-            if (lastGetTime && Date.now() - lastGetTime < 5 * 60 * 1000) {
-              console.log(`Cannot get another card yet`);
-              return;
-            }
+            // Get the current userProfile document
+            userDocRef.get().then((doc) => {
+              if (doc.exists) {
+                // If the document exists, update the grabAvaliable count
+                const userProfile = doc.data();
+                const now = new Date();
+                const lastUpdate = new Date(userProfile.lastGrabAvaliableUpdate);
+                const minutesSinceLastUpdate = Math.floor((now - lastUpdate) / (1000 * 60));
           
-            // Randomly assign gold based on rarity
-            let gold;
-            switch (message.rarity) {
-              case "legendary":
-                gold = Math.floor(Math.random() * 100) + 120;
-                break;
-              case "epic":
-                gold = Math.floor(Math.random() * 80) + 80;
-                break;
-              case "super-rare":
-                gold = Math.floor(Math.random() * 40) + 60;
-                break;
-              case "rare":
-                gold = Math.floor(Math.random() * 30) + 40;
-                break;
-              case "uncommon":
-                gold = Math.floor(Math.random() * 20) + 20;
-                break;
-              default:
-                gold = Math.floor(Math.random() * 10) + 2;
-            }
+                // Increase the grabAvaliable count by 1 for every 5 minutes that have passed
+                const newGrabAvaliable = Math.min(
+                  userProfile.grabAvaliable + Math.floor(minutesSinceLastUpdate / 5),
+                  2
+                );
           
-            const inventoryItem = {
-              userName: displayName,
-              userId: uid,
-              userPhotoURL: photoURL,
-              cardImg: message.cardImg,
-              cardName: message.cardName,
-              cardId: message.cardId,
-              rarity: message.rarity,
-              burngold: gold,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            };
-          
-            cardRef
-              .add(inventoryItem)
-              .then((docRef) => {
-                console.log(`Inventory item written with ID: ${docRef.id}`);
-                const userDocRef = firestore.collection('userProfiles').doc(uid)
-                userDocRef.get().then(
-                  doc =>{
-                    if(doc.exists) {
-                      const getCount = doc.data().getCount || 0
-                      userDocRef.update({ getCount: getCount + 1})
-                    } else {
-                      userDocRef.set({getCount: 1})
-                    }
-                  }
-                )
-                .catch(error => console.error(`Error adding message: ${error}`));
-                lastGetTime = Date.now(); // Set the last get time to now
-                return docRef.id; // Return the ID of the new inventory item
-              })
-              .catch((error) => {
-                console.error(`Error adding inventory item: ${error}`);
-                return null; // Return null if there was an error
-              });
+                // Update the userProfile document with the new grabAvaliable count
+                userDocRef.update({
+                  grabAvaliable: newGrabAvaliable,
+                  lastGrabAvaliableUpdate: now,
+                });
+              } else {
+                // If the document doesn't exist, create a new userProfile with a grabAvaliable count of 1
+                const now = new Date();
+                userDocRef.set({
+                  grabAvaliable: 1,
+                  lastGrabAvaliableUpdate: now,
+                });
+              }
+            });
           };
+          
+          const getCard = (message) => {
+            const { uid, displayName } = user.value;
+          
+            // Check if the user has any grabAvaliable left
+            const userDocRef = firestore.collection('userProfiles').doc(uid);
+            userDocRef.get().then((doc) => {
+              if (doc.exists) {
+                const userProfile = doc.data();
+                if (userProfile.grabAvaliable === 0) {
+                  console.error('Error: no grabAvaliable left');
+                  return;
+                }
+              }
+              const gold = getCardGold(message.rarity);
+    
+              const inventoryItem = {
+                userName: displayName,
+                userId: uid,
+                userPhotoURL: photoURL,
+                cardImg: message.cardImg,
+                cardName: message.cardName,
+                cardId: message.cardId,
+                rarity: message.rarity,
+                burngold: gold,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              };
+          
+              cardRef
+                .add(inventoryItem)
+                .then((docRef) => {
+                  console.log(`Inventory item written with ID: ${docRef.id}`);
+                  
+                  // Decrease the user's grabAvailable count by 1 in the database
+                  userDocRef.update({ grabAvailable: grabAvailable - 1 });
+                  
+                  return docRef.id; // Return the ID of the new inventory item
+                })
+                .catch((error) => {
+                  console.error(`Error adding inventory item: ${error}`);
+                  return null; // Return null if there was an error
+                });
+            }).catch((error) => {
+              console.error(`Error getting user profile: ${error}`);
+              return null; // Return null if there was an error
+            });
+          };
+          
+          // Helper function to get the gold value for a card based on its rarity
+          const getCardGold = (rarity) => {
+            switch (rarity) {
+              case 'legendary':
+                return Math.floor(Math.random() * 100) + 120;
+              case 'epic':
+                return Math.floor(Math.random() * 80) + 80;
+              case 'super-rare':
+                return Math.floor(Math.random() * 40) + 60;
+              case 'rare':
+                return Math.floor(Math.random() * 30) + 40;
+              case 'uncommon':
+                return Math.floor(Math.random() * 20) + 20;
+              default:
+                return Math.floor(Math.random() * 10) + 2;
+            }
+          };
+          
           
 const inventoryRef = firebase.firestore().collection('inventory');
 
