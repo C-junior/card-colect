@@ -153,87 +153,62 @@ export function useChat() {
                 .catch(error => console.error(`Error adding message: ${error}`));
             });
           };
-          const updateUserProfile = (uid) => {
-            const userDocRef = firestore.collection('userProfiles').doc(uid);
-          
-            // Get the current userProfile document
-            userDocRef.get().then((doc) => {
-              if (doc.exists) {
-                // If the document exists, update the grabAvaliable count
-                const userProfile = doc.data();
-                const now = new Date();
-                const lastUpdate = new Date(userProfile.lastGrabAvaliableUpdate);
-                const minutesSinceLastUpdate = Math.floor((now - lastUpdate) / (1000 * 60));
-          
-                // Increase the grabAvaliable count by 1 for every 5 minutes that have passed
-                const newGrabAvaliable = Math.min(
-                  userProfile.grabAvaliable + Math.floor(minutesSinceLastUpdate / 5),
-                  2
-                );
-          
-                // Update the userProfile document with the new grabAvaliable count
-                userDocRef.update({
-                  grabAvaliable: newGrabAvaliable,
-                  lastGrabAvaliableUpdate: now,
-                });
-              } else {
-                // If the document doesn't exist, create a new userProfile with a grabAvaliable count of 1
-                const now = new Date();
-                userDocRef.set({
-                  grabAvaliable: 1,
-                  lastGrabAvaliableUpdate: now,
-                });
-              }
-            });
-          };
+      
           
           const getCard = (message) => {
             const { uid, displayName } = user.value;
-          
-            // Check if the user has any grabAvaliable left
+
             const userDocRef = firestore.collection('userProfiles').doc(uid);
             userDocRef.get().then((doc) => {
               if (doc.exists) {
                 const userProfile = doc.data();
-                if (userProfile.grabAvaliable === 0) {
+                const agora = Date.now()
+                if (userProfile.grabAvaliable >= agora) {
                   console.error('Error: no grabAvaliable left');
+                  clearInterval(intervalId); // Clear the interval when no grabAvaliable left
                   return;
                 }
-              }
-              const gold = getCardGold(message.rarity);
-    
-              const inventoryItem = {
-                userName: displayName,
-                userId: uid,
-                userPhotoURL: photoURL,
-                cardImg: message.cardImg,
-                cardName: message.cardName,
-                cardId: message.cardId,
-                rarity: message.rarity,
-                burngold: gold,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-              };
           
-              cardRef
-                .add(inventoryItem)
-                .then((docRef) => {
-                  console.log(`Inventory item written with ID: ${docRef.id}`);
-                  
-                  // Decrease the user's grabAvailable count by 1 in the database
-                  userDocRef.update({ grabAvailable: grabAvailable - 1 });
-                  
-                  return docRef.id; // Return the ID of the new inventory item
-                })
-                .catch((error) => {
-                  console.error(`Error adding inventory item: ${error}`);
-                  return null; // Return null if there was an error
-                });
-            }).catch((error) => {
-              console.error(`Error getting user profile: ${error}`);
-              return null; // Return null if there was an error
+            const gold = getCardGold(message.rarity);
+          
+            const inventoryItem = {
+              userName: displayName,
+              userId: uid,
+              // userPhotoURL: photoURL,
+              cardImg: message.cardImg,
+              cardName: message.cardName,
+              cardId: message.cardId,
+              rarity: message.rarity,
+              burngold: gold,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+          
+            cardRef
+            .add(inventoryItem)
+            .then((docRef) => {
+              console.log(`Inventory item written with ID: ${docRef.id}`);
+              const now = Date.now();
+              const timeDiff = userProfile.lastGetTime;
+              const oneMinuteInMs = 60000; // 60 seconds in milliseconds
+              const grabAvaliable = Math.min(now + oneMinuteInMs); // add one minute and ensure it's not in the past
+              userDocRef.update({
+                grabAvaliable,
+                getCount: (userProfile.getCount || 0) + 1,
+                lastGetTime: now
+              });
+            })
+            .catch((error) => {
+              console.error(`Error adding inventory item: ${error}`);
             });
-          };
-          
+        } else {
+          console.error(`Error: user profile not found`);
+        }
+      }).catch((error) => {
+        console.error(`Error getting user profile or adding inventory item: ${error}`);
+      });
+    };
+    
+    
           // Helper function to get the gold value for a card based on its rarity
           const getCardGold = (rarity) => {
             switch (rarity) {

@@ -104,7 +104,69 @@ export default {
       });    
       messages.value = newMessages.splice(0, 6);
     });
-    
+    const grabInterval = 5 * 60 * 1000; // 5 minutes in milliseconds
+          const maxGrabCounts = 2;
+          
+          const grabCard = (userProfile) => {
+            const now = new Date();
+            const lastGrabTime = new Date(userProfile.lastGrabTime || 0);
+            const elapsed = now - lastGrabTime;
+            const remaining = grabInterval - elapsed;
+          
+            if (remaining > 0) {
+              const remainingMinutes = Math.ceil(remaining / (60 * 1000));
+              console.log(`Sorry, you need to wait ${remainingMinutes} more minute(s) to grab another card.`);
+              return;
+            }
+          
+            const grabCounts = userProfile.grabCounts || 0;
+            if (grabCounts >= maxGrabCounts) {
+              console.log(`Sorry, you can only keep up to ${maxGrabCounts} grab count(s). Please use some before grabbing more cards.`);
+              return;
+            }
+          
+            // Decrease grab count by 1 and update last grab time
+            const newProfile = {
+              ...userProfile,
+              grabCounts: grabCounts + 1,
+              lastGrabTime: now.getTime(),
+            };
+          
+            // Use 1 grab count to get a card
+            const card = getCard();
+            if (card) {
+              console.log(`You got a new card: ${card.cardName} (${card.rarity}).`);
+              // Save the new inventory item and updated profile
+              saveInventoryItem(card, newProfile);
+            } else {
+              console.log(`Sorry, there was an error getting the card.`);
+            }
+          };
+          
+          const saveInventoryItem = (card, userProfile) => {
+            // Save the inventory item with the updated user profile
+            const { photoURL, uid, displayName } = userProfile;
+            const inventoryItem = {
+              userName: displayName,
+              userId: uid,
+            //  userPhotoURL: photoURL,
+              cardImg: card.cardImg,
+              cardName: card.cardName,
+              cardId: card.cardId,
+              rarity: card.rarity,
+              burngold: card.burngold,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+            cardRef
+              .add(inventoryItem)
+              .then((docRef) => {
+                console.log(`Inventory item written with ID: ${docRef.id}`);
+                firestore.collection('userProfiles').doc(uid).set(userProfile);
+              })
+              .catch((error) => {
+                console.error(`Error adding inventory item: ${error}`);
+              });
+          };
   
     return { user, isLogin, messages,  message, send , pegar,  inventoryRef };
   }
