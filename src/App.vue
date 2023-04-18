@@ -90,8 +90,14 @@ export default{
   }
 
   .nav-links-mobile a:focus{
-    background-color: #a39191;
+    background-color: #999292;
   }
+
+  .nav-links-mobile a.router-link-exact-active {
+  background-color: #928a8a
+}
+
+
 
 .logocenter {
   display: block;

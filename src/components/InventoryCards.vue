@@ -3,12 +3,19 @@
    
     <h2 class="title-page">Inventory</h2>
     
-
-    <div class="container-inv">
+    <div>
+    <input type="text" placeholder="Digite o nome da Carta" v-model="searchTerm" @input="searchCards"  >
+    <ul>
+     
+   
+        <div class="container-inv">
       <ul class="card-list">
-        <li class="card-item" v-for="(item, index) in userInventory" :key="index">
+        <li class="card-item" v-for="(item, index) in searchResults" :key="index">
           <div class="card-container">
+            <div class="card-img"> 
             <img :src="item.cardImg" alt="card image">
+            <img class="frame-inv" :src="item.cardFrame" alt="card image">
+          </div>
             <p class="card-name">{{ item.cardName }}</p>
             <button class="btn btn-outline-danger mb-2" @click="confirmDelete(item)" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button> <!-- Add a button to delete the item -->
             <button class="btn bg-black text-white" @click="selectedItem = item" data-bs-toggle="modal" data-bs-target="#priceModal">Add to Market</button>
@@ -18,46 +25,55 @@
         </li>
       </ul>
     </div> 
-<!-- Modal delete -->
+      
+    </ul>
+  </div>
+
+   
+
+    <!-- Modal delete -->
     <div class="modalDelete" v-if="showDeleteConfirmation">
-          <div class="modal fade " id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog ">
-  <div class="modal-content bg-black bg-gradient">
-    <h2>Are you sure you want to delete "{{nameForDeletedItem }}"?</h2>
-    <p>You will receive {{ goldForDeletedItem }} gold.</p>
-    <div>
-      <button @click="deleteItemConfirmed" data-bs-dismiss="modal">Delete</button>
-      <button data-bs-dismiss="modal" @click="cancelDelete">Cancel</button>
-    </div>
-  </div>
-</div>
-  </div>
-</div>
-<!-- Modal -->
-<div class="modal fade " id="priceModal" tabindex="-1" aria-labelledby="priceModalLabel" aria-hidden="true">
-  <div class="modal-dialog ">
-    <div class="modal-content bg-black bg-gradient">
-      <div class="modal-header">
-        <h2 class="modal-title text-white fs-5 " id="priceModalLabel">Enter the Price for {{  }}  </h2>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <select class="form-select" size="3" aria-label="size 3 select example" v-model="currencyCard">
-          <option selected>Select the currency</option>
-          <option value="gold">Gold</option>
-          <option value="gems">Gems</option>
-        </select>
-        <input type="text" v-model="priceCard">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" @click="addToMarket(selectedItem)" class="btn btn-primary" data-bs-dismiss="modal">Add</button>
+      <div class="modal fade " id="deleteModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog ">
+          <div class="modal-content bg-black bg-gradient">
+            <h2>Are you sure you want to delete "{{nameForDeletedItem }}"?</h2>
+            <p>You will receive {{ goldForDeletedItem }} gold.</p>
+            <div>
+              <button @click="deleteItemConfirmed" data-bs-dismiss="modal">Delete</button>
+              <button data-bs-dismiss="modal" @click="cancelDelete">Cancel</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+
+    <!-- Modal -->
+    <div class="modal fade " id="priceModal"  aria-labelledby="priceModalLabel" aria-hidden="true">
+      <div class="modal-dialog ">
+        <div class="modal-content bg-black bg-gradient">
+          <div class="modal-header">
+            <h2 class="modal-title text-white fs-5 " id="priceModalLabel" v-if="selectedItem">Enter the Price for {{ selectedItem.cardName }}  </h2>
+
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <select class="form-select" size="3" aria-label="size 3 select example" v-model="currencyCard">
+              <option selected>Select the currency</option>
+              <option value="gold">Gold</option>
+              <option value="gems">Gems</option>
+            </select>
+            <input type="text" v-model="priceCard">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" @click="addToMarket(selectedItem)" class="btn btn-primary" data-bs-dismiss="modal">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
+
 <script>
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -76,7 +92,6 @@ export default {
       currencyCard: "gold",
       selectedItem: null,
       searchTerm: "",
-      searchResults: []
     }
   },
   created() {
@@ -130,13 +145,7 @@ export default {
       const user = firebase.auth().currentUser;
       const itemName = item.cardName;
       
-      // const existingItem = this.marketItems.find((marketItem) => {
-      //   return marketItem.cardName === itemName;
-      // });
-      // if (existingItem) {
-      //   alert(`${itemName} is already in the market.`);
-      //   return;
-      // }
+  
       
       // Ask the user for the price and currency
       const price = this.priceCard
@@ -208,14 +217,20 @@ export default {
         alert("Failed to delete item from inventory. Please try again later.");
       }
     },
-    searchCards(searchTerm) {
+    searchCards() {
+      const regex = new RegExp(this.searchTerm, 'i');
       this.searchResults = this.userInventory.filter(item => {
-        const regex = new RegExp(searchTerm, 'gi');
-        return item.cardName.match(regex) || item.rarity.match(regex);
+        return regex.test(item.cardName) || regex.test(item.rarity);
       });
     }
   },
   computed: {
+    searchResults() {
+      const regex = new RegExp(this.searchTerm, 'i');
+      return this.userInventory.filter(item => {
+        return regex.test(item.cardName) || regex.test(item.rarity);
+      });
+    },
     goldForDeletedItem() {
       return this.deleteItem.burngold;
     },
@@ -228,7 +243,6 @@ export default {
   },
 }
 </script>
-
 <!-- <script>
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -340,6 +354,51 @@ export default {
     flex-wrap: wrap;
  } */
 
+/* search style start*/
+/* Search bar */
+input[type="text"] {
+  width: 80%;
+  padding: 12px 20px;
+  position: relative;
+  left: 10%;
+  margin: 8px auto;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-image: url("../assets/search.svg");
+  background-position: 96% 10px;
+  background-repeat: no-repeat;
+  background-size:28px;
+}
+
+
+
+/* Search results list */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* search style end*/
+.card-img{
+  display: block;
+  text-align: center;
+ 
+  overflow:hidden;
+} 
+
+.frame-inv {  
+  position: absolute;
+  left: 28px;
+  height: 208px;
+  width: 125px;
+  filter: hue-rotate(0deg);
+  z-index: 10;
+}
  .container-inv{
   max-width: 1200px;
   display: flex;
@@ -396,6 +455,6 @@ export default {
   }
   
  img {
-    height: 150px;
+  width: 120px;
   }
 </style>

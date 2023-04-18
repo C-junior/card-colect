@@ -157,7 +157,7 @@ export function useChat() {
           
           const getCard = (message) => {
             const { uid, displayName } = user.value;
-
+          
             const userDocRef = firestore.collection('userProfiles').doc(uid);
             userDocRef.get().then((doc) => {
               if (doc.exists) {
@@ -169,45 +169,66 @@ export function useChat() {
                   return;
                 }
           
-            const gold = getCardGold(message.rarity);
+                const gold = getCardGold(message.rarity);
           
-            const inventoryItem = {
-              userName: displayName,
-              userId: uid,
-              // userPhotoURL: photoURL,
-              cardImg: message.cardImg,
-              cardName: message.cardName,
-              cardId: message.cardId,
-              rarity: message.rarity,
-              burngold: gold,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            };
+                let frameImgSrc = "";
+                switch (message.rarity) {
+                  case 'legendary':
+                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-legendary.png";
+                    break;
+                  case 'epic':
+                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-epics.png";
+                    break;
+                  case 'super-rare':
+                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-super-rare.png";
+                    break;
+                  case 'rare':
+                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-rare.png";
+                    break;
+                  case 'uncommon':
+                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-uncommon.png";
+                    break;
+                  default:
+                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-common.png";
+                    break;
+                }
           
-            cardRef
-            .add(inventoryItem)
-            .then((docRef) => {
-              console.log(`Inventory item written with ID: ${docRef.id}`);
-              const now = Date.now();
-              const timeDiff = userProfile.lastGetTime;
-              const oneMinuteInMs = 60000; // 60 seconds in milliseconds
-              const grabAvaliable = Math.min(now + oneMinuteInMs); // add one minute and ensure it's not in the past
-              userDocRef.update({
-                grabAvaliable,
-                getCount: (userProfile.getCount || 0) + 1,
-                lastGetTime: now
-              });
-            })
-            .catch((error) => {
-              console.error(`Error adding inventory item: ${error}`);
+                const inventoryItem = {
+                  userName: displayName,
+                  userId: uid,
+                  cardImg: message.cardImg,
+                  cardName: message.cardName,
+                  cardId: message.cardId,
+                  rarity: message.rarity,
+                  cardFrame: frameImgSrc,
+                  burngold: gold,
+                  createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                };
+
+                cardRef
+                  .add(inventoryItem)
+                  .then((docRef) => {
+                    console.log(`Inventory item written with ID: ${docRef.id}`);
+                    const now = Date.now();
+                    const timeDiff = userProfile.lastGetTime;
+                    const oneMinuteInMs = 60000; // 60 seconds in milliseconds
+                    const grabAvaliable = Math.min(now + oneMinuteInMs); // add one minute and ensure it's not in the past
+                    userDocRef.update({
+                      grabAvaliable,
+                      getCount: (userProfile.getCount || 0) + 1,
+                      lastGetTime: now
+                    });
+                  })
+                  .catch((error) => {
+                    console.error(`Error adding inventory item: ${error}`);
+                  });
+              } else {
+                console.error(`Error: user profile not found`);
+              }
+            }).catch((error) => {
+              console.error(`Error getting user profile or adding inventory item: ${error}`);
             });
-        } else {
-          console.error(`Error: user profile not found`);
-        }
-      }).catch((error) => {
-        console.error(`Error getting user profile or adding inventory item: ${error}`);
-      });
-    };
-    
+          };
     
           // Helper function to get the gold value for a card based on its rarity
           const getCardGold = (rarity) => {
