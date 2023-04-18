@@ -16,6 +16,7 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/about">Inventory</router-link> |
     <router-link to="/marketplace">Card Market</router-link> |
+    <router-link to="/shopgoods">Item Shop</router-link> |
     <router-link to="/profile">Profile</router-link> 
     
   </div>
@@ -25,6 +26,7 @@
     <router-link to="/"><img src="./assets/home-icon.svg" alt=""></router-link> 
     <router-link to="/about"><img src="./assets/backpack-icon.svg" alt=""></router-link>   
     <router-link to="/marketplace"><img src="./assets/market-icon.svg" alt=""></router-link>
+    <router-link to="/shopgoods"> <img src="./assets/shop.svg" alt=""></router-link>
     <router-link to="/profile"><img src="./assets/profile-icon.svg" alt=""></router-link> 
   </div>
 </div>
