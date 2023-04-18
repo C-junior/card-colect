@@ -53,7 +53,6 @@
           <img src="../assets/gem.svg" alt="send-count-icon" class="stat-svg">
           <p class="stat-text"> 0 </p>
         </div>
-      
     </div>
 </div>
     </div>
@@ -79,64 +78,23 @@
       const gold = ref(0);
   
       watchEffect(() => {
-  if (user.value) {
-    // Retrieve send count, get count, gold, and bought item from Firestore
-    const db = firebase.firestore();
-    const userRef = db.collection('userProfiles').doc(user.value.uid);
-    userRef.get().then((doc) => {
-      const userData = doc.data();
-      sendCount.value = userData.sendCount || 0;
-      getCount.value = userData.getCount || 0;
-      gold.value = userData.burngold + userData.gold || 0;
-      const boughtItem = userData.boughtItem || {};
-      // Display the item information in the user profile
-      // You can modify the HTML code below to display the item information as desired
-      const itemImage = boughtItem.itemImage || '';
-      const itemName = boughtItem.itemName || '';
-      const itemPrice = boughtItem.itemPrice || 0;
-      // Display the item information in the user profile
-      // You can modify the HTML code below to display the item information as desired
-      const itemHTML = `
-        <div class="stat-item">
-          <img src="${itemImage}" alt="bought-item-image" class="stat-svg">
-          <p class="stat-text">${itemName} (${itemPrice} gold)</p>
-        </div>
-      `;
-      document.getElementById('bought-item').innerHTML = itemHTML;
-    }).catch((error) => {
-      console.error('Error retrieving user data: ', error);
-    });
-  }
-});
-const buyExtraGrab = async () => {
-    // Get the current user
-    const currentUser = firebase.auth().currentUser
-    if (!currentUser) {
-      console.log('User not logged in')
-      return
-    }
+        if (user.value) {
+          // Retrieve send count, get count, and gold from Firestore
+          const db = firebase.firestore();
+          const userRef = db.collection('userProfiles').doc(user.value.uid);
+          userRef.get().then((doc) => {
+            const userData = doc.data();
+            sendCount.value = userData.sendCount || 0;
+            getCount.value = userData.getCount || 0;
+            gold.value = userData.burngold + userData.gold || 0;
+          }).catch((error) => {
+            console.error('Error retrieving user data: ', error);
+          });
+        }
+      });
   
-    // Get the user's profile document
-    const userProfileRef = firestore.collection('userProfiles').doc(currentUser.uid)
-    const userProfile = await userProfileRef.get()
-
-    // Check if the user has enough gold to purchase the Extra Grab item
-    const gold = userProfile.get('gold')
-    const extraGrabPrice = 100 // or whatever the price of the item is
-    if (gold < extraGrabPrice) {
-      console.log('User does not have enough gold to purchase Extra Grab')
-      return
+      return { user, sendCount, getCount, gold, isLogin };
     }
-
-    // Update the user's profile document to add the Extra Grab item to the inventory
-    await userProfileRef.update({
-      gold: gold - extraGrabPrice,
-      inventory: firebase.firestore.FieldValue.arrayUnion('Extra Grab')
-    })
-  }
-
-  return { user, sendCount, getCount, gold, isLogin, buyExtraGrab }
-}
   }
   </script>
 
