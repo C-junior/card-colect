@@ -2,10 +2,10 @@
     <div class="shop-container">
       <h1 class="shop-title">Shop</h1>
       <div v-for="item in items" :key="item.id" class="item-container">
-        <img src="../assets/file-plus.svg" alt=""> <div class="item-name">{{ item.name }}</div>
+        <img :src="`src/assets/${item.img}.svg`" alt=""> <div class="item-name">{{ item.name }}</div>
         <div class="item-description">{{ item.description }}</div>
-        <div class="item-price">{{ item.price }}</div>
-        <button @click="buyItem(item)" class="buy-button">Buy</button>
+        <div class="item-price"> <img src="../assets/coin.svg" > {{ item.price }} </div>
+        <button @click="buyItem(item)" class="buy-button">Use</button>
       </div>
     </div>
   </template>
@@ -21,32 +21,47 @@
     setup() {
       const { user } = useAuth();
       const items = ref([
-      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 100 }
+      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 600, img:'extra-drop' },
+      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 300, img:'file-plus' }
     ])
   
-      const buyItem = async () => {
-        if (!user.value) {
-          console.log('User not logged in');
-          return;
-        }
-  
-        const db = firebase.firestore();
-        const userProfileRef = db.collection('userProfiles').doc(user.value.uid);
-        const userProfile = await userProfileRef.get();
-        const gold = userProfile.get('gold');
-  
-        if (gold < 100) {
-          console.log('User does not have enough gold to buy Extra Grab');
-          return;
-        }
-  
+    const buyItem = async (item) => {
+  if (!user.value) {
+    console.log('User not logged in');
+    return;
+  }
+
+  const db = firebase.firestore();
+  const userProfileRef = db.collection('userProfiles').doc(user.value.uid);
+  const userProfile = await userProfileRef.get();
+  const gold = userProfile.get('gold');
+
+  if (gold < item.price) {
+    console.log(`User does not have enough gold to buy ${item.name}`);
+    return;
+  }
+
+  let confirmation = confirm(`Are you sure you want to buy ${item.name}?`);
+
+  if (confirmation) {
+    if (item.name === 'Extra Grab') {
+      await userProfileRef.update({
+        gold: gold - item.price,
+        grabAvaliable: Date.now()
+        //   extraGrabCount: (userProfile.get('extraGrabCount') || 0) + 1
+      });
+      console.log('Extra Grab purchased successfully');
+    } else if (item.name === 'Extra Drop') {
         await userProfileRef.update({
-          gold: gold - 100,
-          extraGrabCount: (userProfile.get('extraGrabCount') || 0) + 1
-        });
-  
-        console.log('Extra Grab purchased successfully');
-      };
+        gold: gold - item.price,
+        sendAvaliable: Date.now()        
+      });
+      console.log('Extra Drop purchased successfully');
+    }
+  } else {
+    console.log(`User cancelled purchase of ${item.name}`);
+  }
+};
   
       return {
       items,
@@ -62,7 +77,7 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: black;
+  background-color: rgb(43, 43, 43);
 }
 
 .shop-title {

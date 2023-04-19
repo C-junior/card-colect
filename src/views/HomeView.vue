@@ -33,7 +33,7 @@
 
 <script>
 import Navbar from '../components/Login.vue';
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
 import { useAuth, useChat } from '@/firebase'
 
 
@@ -49,7 +49,20 @@ export default {
     const { sendMessage, messagesRef, getCard,  inventoryRef } = useChat()
     const message = ref('')
     
-    // Disable the button for 3 minutes after a click
+    watchEffect(onInvalidate => {
+      const unsubscribe = messagesRef.orderBy('createdAt', 'desc').onSnapshot(querySnapshot => {
+        const newMessages = [];
+        querySnapshot.forEach(doc => {
+          newMessages.push(doc.data())
+        });
+        messages.value = newMessages.splice(0, 6);
+      });
+
+      onInvalidate(() => {
+        // Unsubscribe from the listener when the component is unmounted
+        unsubscribe();
+      });
+    });
   
     
     const pegar = async (message) => {
@@ -79,18 +92,7 @@ export default {
     
     // Send a message
     const send = async () => {
-      const fiveMinutesAgo = new Date(Date.now() - (2 * 10 * 1000));
-  const userMessagesQuery = messagesRef.where('userId', '==', user.value.uid);
-  const recentMessages = await userMessagesQuery
-    .where('createdAt', '>', fiveMinutesAgo)
-    .limit(3)
-    .get();
-
-  // Check if the user has sent more than 3 messages within the last 5 minutes
-  if (recentMessages.size >= 3) {
-    console.log('You have sent too many messages. Please wait before sending another message. ', fiveMinutesAgo);
-    return;
-  }
+ 
   await sendMessage(message.value);
   message.value = ''; // Clear the input field after sending
 };

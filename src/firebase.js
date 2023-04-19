@@ -101,58 +101,70 @@ export function useChat() {
   legendary: 1       // 1/21 chance
 };
 
-           const sendMessage = image => {
-            if (!isLogin.value) return;
-            const selectedCards = [];
-  const totalWeight = Object.values(rarities).reduce((acc, val) => acc + val, 0);
-  while (selectedCards.length < 3) {
-    const rand = Math.random() * totalWeight;
-    let acc = 0;
-    for (const [rarity, weight] of Object.entries(rarities)) {
-      acc += weight;
-      if (rand <= acc) {
-        const cardsOfRarity = cards.filter(card => card.rarity === rarity);
-        const card = cardsOfRarity[Math.floor(Math.random() * cardsOfRarity.length)];
-        if (!selectedCards.includes(card)) {
-          selectedCards.push(card);
-        }
-        break;
+const sendMessage = image => {
+  if (!isLogin.value) return;
+  const userDocRef = firestore.collection('userProfiles').doc(user.value.uid);
+  const now = Date.now();
+  userDocRef.get().then(doc => {
+    if (doc.exists) {
+      const sendCount = doc.data().sendCount || 0;
+      const sendAvaliable = doc.data().sendAvaliable || 0;
+      if (now < sendAvaliable) {
+        const waitTimeInMs = sendAvaliable - now;
+        const waitTimeInMin = Math.ceil(waitTimeInMs / 1000 / 60);
+        alert(`You can't send a message yet. Please wait ${waitTimeInMin} minute(s).`);
+        return;
       }
-    }
-  }
-            const { photoURL, uid, displayName } = user.value;
-            selectedCards.forEach(card => {
-              const rarity = card.rarity;
-            
-              const { cardName, image: cardImg } = card;
-              const message = {
-                cardName: card.name,
-                cardImg: card.image,
-                cardId: nanoid(8),
-                rarity,
-                userName: displayName,
-                image,
-                userId: uid,
-                userPhotoURL: photoURL,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-              };
-              messagesRef.add(message)
-                .then(docRef => {
-                  console.log(`Message written with ID: ${docRef.id}`);
-                  // Update send count of the user
-                  const userDocRef = firestore.collection('userProfiles').doc(uid);
-                  userDocRef.get().then(doc => {
-                    if (doc.exists) {
-                      const sendCount = doc.data().sendCount || 0;
-                      userDocRef.update({ sendCount: sendCount + 1 });
-                    } else {
-                      userDocRef.set({ sendCount: 1 });
-                    }
-                  });
-                })
-                .catch(error => console.error(`Error adding message: ${error}`));
+      const twoMinuteInMs = 2 * 60 * 1000;
+      const sendAvaliableNew = now + twoMinuteInMs;
+      const selectedCards = [];
+      const totalWeight = Object.values(rarities).reduce((acc, val) => acc + val, 0);
+      while (selectedCards.length < 3) {
+        const rand = Math.random() * totalWeight;
+        let acc = 0;
+        for (const [rarity, weight] of Object.entries(rarities)) {
+          acc += weight;
+          if (rand <= acc) {
+            const cardsOfRarity = cards.filter(card => card.rarity === rarity);
+            const card = cardsOfRarity[Math.floor(Math.random() * cardsOfRarity.length)];
+            if (!selectedCards.includes(card)) {
+              selectedCards.push(card);
+            }
+            break;
+          }
+        }
+      }
+      const { photoURL, uid, displayName } = user.value;
+      selectedCards.forEach(card => {
+        const rarity = card.rarity;
+        const { cardName, image: cardImg } = card;
+        const message = {
+          cardName: card.name,
+          cardImg: card.image,
+          cardId: nanoid(8),
+          rarity,
+          userName: displayName,
+          image,
+          userId: uid,
+          userPhotoURL: photoURL,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        messagesRef.add(message)
+          .then(docRef => {
+            console.log(`Message written with ID: ${docRef.id}`);
+            userDocRef.update({
+              sendAvaliable: sendAvaliableNew,
+              sendCount: sendCount + 1,
+              lastsendTime: now
             });
-          };
+          })
+          .catch(error => console.error(`Error adding message: ${error}`));
+      });
+    } else {
+      userDocRef.set({ sendCount: 1 });
+    }
+  });
+};
       
           
           const getCard = (message) => {
