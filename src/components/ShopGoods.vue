@@ -2,7 +2,7 @@
     <div class="shop-container">
       <h1 class="shop-title">Shop</h1>
       <div v-for="item in items" :key="item.id" class="item-container">
-        <img :src="`src/assets/${item.img}.svg`" alt=""> <div class="item-name">{{ item.name }}</div>
+        <img :src="`../src/assets/${item.img}.svg`" alt=""> <div class="item-name">{{ item.name }}</div>
         <div class="item-description">{{ item.description }}</div>
         <div class="item-price"> <img src="../assets/coin.svg" > {{ item.price }} </div>
         <button @click="buyItem(item)" class="buy-button">Use</button>
@@ -22,7 +22,8 @@
       const { user } = useAuth();
       const items = ref([
       { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 600, img:'extra-drop' },
-      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 300, img:'file-plus' }
+      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 300, img:'file-plus' },
+      
     ])
   
     const buyItem = async (item) => {

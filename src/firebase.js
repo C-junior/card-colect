@@ -137,10 +137,11 @@ const sendMessage = image => {
       const { photoURL, uid, displayName } = user.value;
       selectedCards.forEach(card => {
         const rarity = card.rarity;
-        const { cardName, image: cardImg } = card;
+        const { cardName, cardSerie, image: cardImg } = card;
         const message = {
           cardName: card.name,
           cardImg: card.image,
+          cardSerie: card.serie,
           cardId: nanoid(8),
           rarity,
           userName: displayName,
@@ -210,6 +211,7 @@ const sendMessage = image => {
                   userId: uid,
                   cardImg: message.cardImg,
                   cardName: message.cardName,
+                  cardSerie: message.cardSerie,
                   cardId: message.cardId,
                   rarity: message.rarity,
                   cardFrame: frameImgSrc,

@@ -128,9 +128,9 @@ export default {
           if (!userDoc.exists) {
             throw "User does not exist!";
           }
-          const { burngold: currentGold = 0 } = userDoc.data();
+          const { gold: currentGold = 0 } = userDoc.data();
           const newGold = currentGold + itemGold;
-          transaction.update(userRef, { burngold: newGold });
+          transaction.update(userRef, { gold: newGold });
           transaction.delete(docRef);
           console.log(`Document with ID ${documentId} successfully deleted from Firestore`);
           this.userInventory = this.userInventory.filter((invItem) => invItem.id !== item.id);
@@ -220,7 +220,7 @@ export default {
     searchCards() {
       const regex = new RegExp(this.searchTerm, 'i');
       this.searchResults = this.userInventory.filter(item => {
-        return regex.test(item.cardName) || regex.test(item.rarity);
+        return regex.test(item.cardName) || regex.test(item.cardSerie);
       });
     }
   },
@@ -228,7 +228,7 @@ export default {
     searchResults() {
       const regex = new RegExp(this.searchTerm, 'i');
       return this.userInventory.filter(item => {
-        return regex.test(item.cardName) || regex.test(item.rarity);
+        return regex.test(item.cardName) || regex.test(item.cardSerie);
       });
     },
     goldForDeletedItem() {
