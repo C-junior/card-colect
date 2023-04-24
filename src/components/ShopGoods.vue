@@ -6,27 +6,64 @@
         <div class="item-description">{{ item.description }}</div>
         <div class="item-price"> <img src="../assets/coin.svg" > {{ item.price }} </div>
         <button @click="buyItem(item)" class="buy-button">Use</button>
+        <div v-if="item.purchased" class="item-success-msg">{{ item.name }} purchased successfully!</div>
       </div>
     </div>
   </template>
-  
-  <script>
-  import { ref } from 'vue'
-  import firebase from 'firebase/app';
-  import 'firebase/firestore';
-  import { useAuth } from '@/firebase.js';
-  
-  export default {
-    name: 'ShopView',
-    setup() {
-      const { user } = useAuth();
-      const items = ref([
-      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 600, img:'extra-drop' },
-      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 300, img:'file-plus' },
-      
-    ])
-  
-    const buyItem = async (item) => {
+
+<script>
+import { ref } from 'vue';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import { useAuth } from '@/firebase.js';
+import Swal from 'sweetalert2';
+import { nanoid } from 'nanoid';
+
+export default {
+  name: 'ShopView',
+  setup() {
+    const { user } = useAuth();
+    const items = ref([
+      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 600, img: 'extra-drop', purchased: false },
+      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 300, img: 'file-plus', purchased: false },
+      { id: 3, name: 'Naruto Pack', description: 'Get an extra drop', price: 1200, img: 'file-plus', purchased: false },
+    ]);
+    const frameImgSrc = (rarity) => {
+  switch (rarity) {
+    case 'legendary':
+      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-legendary.png';
+    case 'epic':
+      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-epics.png';
+    case 'super-rare':
+      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-super-rare.png';
+    case 'rare':
+      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-rare.png';
+    case 'uncommon':
+      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-uncommon.png';
+    default:
+      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-common.png';
+  }
+};
+
+const getCardGold = (rarity) => {
+  switch (rarity) {
+    case 'legendary':
+      return Math.floor(Math.random() * 100) + 120;
+    case 'epic':
+      return Math.floor(Math.random() * 80) + 80;
+    case 'super-rare':
+      return Math.floor(Math.random() * 40) + 60;
+    case 'rare':
+      return Math.floor(Math.random() * 30) + 40;
+    case 'uncommon':
+      return Math.floor(Math.random() * 20) + 20;
+    default:
+      return Math.floor(Math.random() * 10) + 2;
+  }
+};
+
+
+const buyItem = async (item) => {
   if (!user.value) {
     console.log('User not logged in');
     return;
@@ -42,37 +79,88 @@
     return;
   }
 
-  let confirmation = confirm(`Are you sure you want to buy ${item.name}?`);
+  let confirmation = await Swal.fire({
+    title: `Are you sure you want to buy ${item.name}?`,
+    icon: 'question',
+    showCancelButton: true,
+    background: '#313131',
+    confirmButtonColor: '#831714',
+    cancelButtonColor: '#808080',
+    confirmButtonText: 'Yes, buy it!',
+    cancelButtonText: 'No, cancel'
+  });
 
-  if (confirmation) {
+  if (confirmation.isConfirmed) {
     if (item.name === 'Extra Grab') {
       await userProfileRef.update({
         gold: gold - item.price,
         grabAvaliable: Date.now()
-        //   extraGrabCount: (userProfile.get('extraGrabCount') || 0) + 1
       });
       console.log('Extra Grab purchased successfully');
     } else if (item.name === 'Extra Drop') {
-        await userProfileRef.update({
+      await userProfileRef.update({
         gold: gold - item.price,
-        sendAvaliable: Date.now()        
+        dropAvaliable: Date.now()
       });
-      console.log('Extra Drop purchased successfully');
+      console.log('Naruto Pack purchased successfully');
     }
+    else if (item.name === 'Naruto Pack') {
+      const response = await fetch('https://api.jsonbin.io/v3/b/642c817dc0e7653a059dc7b1');
+      const data = await response.json();
+      console.log(data);
+      const cards = data.record.characters;
+      console.log(cards);
+      const randomCards = cards.sort(() => 0.5 - Math.random()).slice(0, 6);
+      console.log('Randomly selected 6 cards:', randomCards);
+      const batch = db.batch();
+      const userCardsRef = db.collection('inventory');
+      randomCards.forEach((card) => {
+        const newCardRef = userCardsRef.doc();
+        const rarity = card.rarity;
+        const cardGold = getCardGold(rarity);
+        const cardFrame = frameImgSrc(rarity);
+        batch.set(newCardRef, {
+          cardName: card.name,
+          cardImg: card.image,
+          cardSerie: card.serie,
+          cardId: newCardRef.id,
+          userId: user.value.uid,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          rarity: rarity,
+          burngold: cardGold,
+          cardFrame: cardFrame,
+        });
+      });
+      await batch.commit();
+      await userProfileRef.update({
+        gold: gold - item.price
+      });
+      console.log('Naruto Pack purchased successfully');
+    }
+    await Swal.fire({
+      title: 'Purchase complete!',
+      text: `${item.name} purchased successfully.`,
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
   } else {
     console.log(`User cancelled purchase of ${item.name}`);
   }
 };
-  
-      return {
+
+    return {
       items,
-      buyItem
-    }
-    }
-  };
-  </script>
-  
+      buyItem,
+    };
+  },
+};
+</script>
   <style scoped>
+
+.my-swal {
+  background-color: rgb(29, 29, 29);
+  color: #831714;
+}
 .shop-container {
   display: flex;
   flex-direction: column;
