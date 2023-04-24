@@ -2,7 +2,7 @@
     <div class="shop-container">
       <h1 class="shop-title">Shop</h1>
       <div v-for="item in items" :key="item.id" class="item-container">
-        <img :src="`../src/assets/${item.img}.svg`" alt=""> <div class="item-name">{{ item.name }}</div>
+        <img :src="`../src/assets/${item.img}`" alt=""  height="100"> <div class="item-name">{{ item.name }}</div>
         <div class="item-description">{{ item.description }}</div>
         <div class="item-price"> <img src="../assets/coin.svg" > {{ item.price }} </div>
         <button @click="buyItem(item)" class="buy-button">Use</button>
@@ -24,9 +24,10 @@ export default {
   setup() {
     const { user } = useAuth();
     const items = ref([
-      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 600, img: 'extra-drop', purchased: false },
-      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 300, img: 'file-plus', purchased: false },
-      { id: 3, name: 'Naruto Pack', description: 'Get an extra drop', price: 1200, img: 'file-plus', purchased: false },
+      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 600, img: 'extra-drop.svg', purchased: false },
+      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 300, img: 'file-plus.svg', purchased: false },
+      { id: 3, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'narutopack.jpg', purchased: false },
+      { id: 4, name: 'Attack on Titan Pack', description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee', price: 1200, img: 'aot.png', purchased: false },
     ]);
     const frameImgSrc = (rarity) => {
   switch (rarity) {
@@ -137,6 +138,40 @@ const buyItem = async (item) => {
       });
       console.log('Naruto Pack purchased successfully');
     }
+    else if (item.name === 'Attack on Titan Pack') {
+      const response = await fetch('https://api.jsonbin.io/v3/b/64385b2fc0e7653a05a3bf79');
+      const data = await response.json();
+      console.log(data);
+      const cards = data.record.characters;
+      console.log(cards);
+      const randomCards = cards.sort(() => 0.5 - Math.random()).slice(0, 6);
+      console.log('Randomly selected 6 cards:', randomCards);
+      const batch = db.batch();
+      const userCardsRef = db.collection('inventory');
+      randomCards.forEach((card) => {
+        const newCardRef = userCardsRef.doc();
+        const rarity = card.rarity;
+        const cardGold = getCardGold(rarity);
+        const cardFrame = frameImgSrc(rarity);
+        batch.set(newCardRef, {
+          cardName: card.name,
+          cardImg: card.image,
+          cardSerie: card.serie,
+          cardId: newCardRef.id,
+          userId: user.value.uid,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          rarity: rarity,
+          burngold: cardGold,
+          cardFrame: cardFrame,
+        });
+      });
+      await batch.commit();
+      await userProfileRef.update({
+        gold: gold - item.price
+      });
+      console.log('Attack on Titan Pack purchased successfully');
+    }
+    item.purchased = true;
     await Swal.fire({
       title: 'Purchase complete!',
       text: `${item.name} purchased successfully.`,
