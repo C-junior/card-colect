@@ -2,7 +2,7 @@
     <div class="shop-container">
       <h1 class="shop-title">Shop</h1>
       <div v-for="item in items" :key="item.id" class="item-container">
-        <img :src="`../assets/${item.img}`" alt=""  height="100"> <div class="item-name">{{ item.name }}</div>
+        <img :src=item.img alt=""  height="100"> <div class="item-name">{{ item.name }}</div>
         <div class="item-description">{{ item.description }}</div>
         <div class="item-price"> <img src="../assets/coin.svg" > {{ item.price }} </div>
         <button @click="buyItem(item)" class="buy-button">Use</button>
@@ -24,10 +24,10 @@ export default {
   setup() {
     const { user } = useAuth();
     const items = ref([
-      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 600, img: 'extra-drop.svg', purchased: false },
-      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 300, img: 'file-plus.svg', purchased: false },
-      { id: 3, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'narutopack.jpg', purchased: false },
-      { id: 4, name: 'Attack on Titan Pack', description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee', price: 1200, img: 'aot.png', purchased: false },
+      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 600, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/file-plus.svg?raw=true', purchased: false },
+      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 300, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/extra-drop.svg?raw=true', purchased: false },
+      { id: 3, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false },
+      { id: 4, name: 'Attack on Titan Pack', description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/aot.PNG?raw=true', purchased: false },
     ]);
     const frameImgSrc = (rarity) => {
   switch (rarity) {
