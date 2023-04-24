@@ -2,7 +2,7 @@
     <div class="shop-container">
       <h1 class="shop-title">Shop</h1>
       <div v-for="item in items" :key="item.id" class="item-container">
-        <img :src="`../src/assets/${item.img}`" alt=""  height="100"> <div class="item-name">{{ item.name }}</div>
+        <img :src="`../assets/${item.img}`" alt=""  height="100"> <div class="item-name">{{ item.name }}</div>
         <div class="item-description">{{ item.description }}</div>
         <div class="item-price"> <img src="../assets/coin.svg" > {{ item.price }} </div>
         <button @click="buyItem(item)" class="buy-button">Use</button>
