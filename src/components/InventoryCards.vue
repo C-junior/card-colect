@@ -5,8 +5,7 @@
     
     <div>
     <input type="text" placeholder="Digite o nome da Carta" v-model="searchTerm" @input="searchCards"  >
-    <ul>
-     
+    <ul>     
    
         <div class="container-inv">
       <ul class="card-list">
@@ -17,7 +16,13 @@
             <img class="frame-inv" :src="item.cardFrame" alt="card image">
           </div>
             <p class="card-name">{{ item.cardName }}</p>
-            <button class="btn btn-outline-danger mb-2" @click="confirmDelete(item)" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button> <!-- Add a button to delete the item -->
+            <button  class="btn btn-outline-danger mb-2" @click="confirmDelete(item)">Delete</button>
+      <div v-if="showDeleteConfirmation && deleteItem.id === item.id">
+        <p>Are you sure you want to delete "{{ item.cardName }}" for {{ goldForDeletedItem }} gold ?</p>
+        <button @click="deleteItemConfirmed">Yes</button>
+        <button @click="showDeleteConfirmation = false">No</button>
+      </div>
+ <!-- Add a button to delete the item -->
             <button class="btn bg-black text-white" @click="selectedItem = item" data-bs-toggle="modal" data-bs-target="#priceModal">Add to Market</button>
 
           </div>
@@ -28,10 +33,7 @@
       
     </ul>
   </div>
-
-   
-
-    <!-- Modal delete -->
+    <!-- Modal delete 
     <div class="modalDelete" v-if="showDeleteConfirmation">
       <div class="modal fade " id="deleteModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog ">
@@ -45,7 +47,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div>-->
 
     <!-- Modal -->
     <div class="modal fade " id="priceModal"  aria-labelledby="priceModalLabel" aria-hidden="true">
@@ -77,7 +79,7 @@
 <script>
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import {reactive} from 'vue'
+import { reactive } from 'vue';
 
 export default {
   name: 'AboutView',
@@ -94,25 +96,75 @@ export default {
       searchTerm: "",
     }
   },
-  created() {
+  async created() {
     const db = firebase.firestore();
     const user = firebase.auth().currentUser;
     if (user) {
-      db.collection("inventory").where("userId", "==", user.uid).get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          this.userInventory.push({...doc.data(), id: doc.id}); // Include the document ID in the userInventory array
-        });
+      const querySnapshot = await db.collection("inventory").where("userId", "==", user.uid).get();
+      querySnapshot.forEach((doc) => {
+        this.userInventory.push({ ...doc.data(), id: doc.id });
       });
     }
   },
-  methods: { 
+  methods: {
+    async addToMarket(item) {
+        const db = firebase.firestore();
+        const user = firebase.auth().currentUser;
+        const itemName = item.cardName;
+        
+    
+        
+        // Ask the user for the price and currency
+        const price = this.priceCard
+        if (price === null) {
+          // User clicked "Cancel" button
+          return;
+        }
+        const currency = this.currencyCard
+        if (currency === null) {
+          // User clicked "Cancel" button
+          return;
+        }
+        // Validate the price and currency
+        const parsedPrice = parseInt(price, 10);
+        if (isNaN(parsedPrice) || parsedPrice < 0) {
+          alert("Invalid price. Please enter a positive number.");
+          return;
+        }
+        const currencies = ['gold', 'gems'];
+        if (!currencies.includes(currency.toLowerCase())) {
+          alert("Invalid currency. Please enter either gold or gems.");
+          return;
+        }
+        
+        try {
+          // Add the item to the market collection
+          await db.collection("market").add({...item,
+            userId: user.uid,
+            price: parsedPrice,
+            currency: currency.toLowerCase(),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+          
+          // Remove the item from the user's inventory collection
+          const inventoryItem = await db.collection("inventory").where("userId", "==", user.uid)
+            .where("cardName", "==", itemName).limit(1).get();
+          if (!inventoryItem.empty) {
+            await inventoryItem.docs[0].ref.delete();
+            this.userInventory = this.userInventory.filter((invItem) => invItem.id !== item.id);
+          }
+          
+          // alert(`${itemName} has been added to the market for ${parsedPrice} ${currency}.`);
+        } catch (error) {
+          console.error("Error adding document: ", error);
+          alert("Failed to add item to market. Please try again later.");
+        }
+      },
     async confirmDelete(item) {
-      this.deleteItem = item; // store the item to be deleted
-      this.showDeleteConfirmation = true; // show the confirmation dialog
+      this.deleteItem = item;
+      this.showDeleteConfirmation = true;
     },
- 
     async deleteItemConfirmed() {
-      // delete the item and update the user's gold
       const item = this.deleteItem;
       const collectionName = "inventory";
       const documentId = item.id;
@@ -132,7 +184,7 @@ export default {
           const newGold = currentGold + itemGold;
           transaction.update(userRef, { gold: newGold });
           transaction.delete(docRef);
-          console.log(`Document with ID ${documentId} successfully deleted from Firestore`);
+          console.log(`Document with ID ${documentId} successfully deleted from Firestore ${newGold}  `);
           this.userInventory = this.userInventory.filter((invItem) => invItem.id !== item.id);
         });
         this.showDeleteConfirmation = false;
@@ -140,108 +192,46 @@ export default {
         console.error("Error deleting document: ", error);
       }
     },
-    async addToMarket(item) {
-      const db = firebase.firestore();
-      const user = firebase.auth().currentUser;
-      const itemName = item.cardName;
-      
-  
-      
-      // Ask the user for the price and currency
-      const price = this.priceCard
-      if (price === null) {
-        // User clicked "Cancel" button
-        return;
-      }
-      const currency = this.currencyCard
-      if (currency === null) {
-        // User clicked "Cancel" button
-        return;
-      }
-      // Validate the price and currency
-      const parsedPrice = parseInt(price, 10);
-      if (isNaN(parsedPrice) || parsedPrice < 0) {
-        alert("Invalid price. Please enter a positive number.");
-        return;
-      }
-      const currencies = ['gold', 'gems'];
-      if (!currencies.includes(currency.toLowerCase())) {
-        alert("Invalid currency. Please enter either gold or gems.");
-        return;
-      }
-      
-      try {
-        // Add the item to the market collection
-        await db.collection("market").add({...item,
-          userId: user.uid,
-          price: parsedPrice,
-          currency: currency.toLowerCase(),
-          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        });
-        
-        // Remove the item from the user's inventory collection
-        const inventoryItem = await db.collection("inventory").where("userId", "==", user.uid)
-          .where("cardName", "==", itemName).limit(1).get();
-        if (!inventoryItem.empty) {
-          await inventoryItem.docs[0].ref.delete();
-          this.userInventory = this.userInventory.filter((invItem) => invItem.id !== item.id);
-        }
-        
-        // alert(`${itemName} has been added to the market for ${parsedPrice} ${currency}.`);
-      } catch (error) {
-        console.error("Error adding document: ", error);
-        alert("Failed to add item to market. Please try again later.");
-      }
-    },
-
-    confirmDelete(item) {
-      this.deleteItem = item;
-      this.showDeleteConfirmation = true;
-    },
-
     async deleteItemFromInventory() {
       const db = firebase.firestore();
       const user = firebase.auth().currentUser;
-
       if (!this.deleteItem || !user) {
         return;
       }
-
       try {
-        const inventoryItem = await db.collection("inventory").doc(this.deleteItem.id).delete();
+        await db.collection("inventory").doc(this.deleteItem.id).delete();
         this.showDeleteConfirmation = false;
-        this.deleteItem = null;
         alert(`Item "${this.deleteItem.cardName}" has been deleted from your inventory.`);
+        this.deleteItem = null;
       } catch (error) {
         console.error("Error deleting document: ", error);
         alert("Failed to delete item from inventory. Please try again later.");
       }
-    },
-    searchCards() {
-      const regex = new RegExp(this.searchTerm, 'i');
-      this.searchResults = this.userInventory.filter(item => {
-        return regex.test(item.cardName) || regex.test(item.cardSerie);
-      });
-    }
+    }, searchCards() {
+        const regex = new RegExp(this.searchTerm, 'i');
+        this.searchResults = this.userInventory.filter(item => {
+          return regex.test(item.cardName) || regex.test(item.cardSerie);
+        });
+      }
   },
   computed: {
     searchResults() {
-      const regex = new RegExp(this.searchTerm, 'i');
-      return this.userInventory.filter(item => {
-        return regex.test(item.cardName) || regex.test(item.cardSerie);
-      });
-    },
+        const regex = new RegExp(this.searchTerm, 'i');
+        return this.userInventory.filter(item => {
+          return regex.test(item.cardName) || regex.test(item.cardSerie);
+        });
+      },
     goldForDeletedItem() {
-      return this.deleteItem.burngold;
+      return this.deleteItem?.burngold;
     },
     nameForDeletedItem() {
-      return this.deleteItem.cardName;
+      return this.deleteItem?.cardName;
     },
     nameForSelectedItem() {
-      return this.selectedItem.cardName;
+      return this.selectedItem?.cardName;
     }
   },
-}
+};
 </script>
 <!-- <script>
 import firebase from 'firebase/app';
@@ -390,7 +380,10 @@ ul {
  
   overflow:hidden;
 } 
-
+/* tirar dps hover*/
+.card-img:hover{
+  transform: scale(1.5);
+}
 .frame-inv {  
   position: absolute;
   left: 28px;
@@ -428,6 +421,7 @@ ul {
   
   .card-item:hover {
     transform: translateY(-5px);
+    transform: scale(1.5);
   }
   
   .card-container {

@@ -93,11 +93,11 @@ export function useChat() {
         
            const { user, isLogin } = useAuth()
            const rarities = {
-  common: 30,         // 1/21 chance
-  uncommon: 20,       // 2/21 chance
-  rare: 10,           // 4/21 chance
+  common: 60,         // 1/21 chance
+  uncommon: 22,       // 2/21 chance
+  rare: 9,           // 4/21 chance
   'super-rare': 6,   // 6/21 chance
-  epic: 4,           // 7/21 chance
+  epic: 2,           // 7/21 chance
   legendary: 1       // 1/21 chance
 };
 

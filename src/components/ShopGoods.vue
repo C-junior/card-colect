@@ -1,15 +1,17 @@
 <template>
-    <div class="shop-container">
-      <h1 class="shop-title">Shop</h1>
-      <div v-for="item in items" :key="item.id" class="item-container">
-        <img :src=item.img alt=""  height="100"> <div class="item-name">{{ item.name }}</div>
-        <div class="item-description">{{ item.description }}</div>
-        <div class="item-price"> <img src="../assets/coin.svg" > {{ item.price }} </div>
-        <button @click="buyItem(item)" class="buy-button">Use</button>
-        <div v-if="item.purchased" class="item-success-msg">{{ item.name }} purchased successfully!</div>
-      </div>
-    </div>
-  </template>
+<div class="shop-container">
+    <h1 class="shop-title">Shop</h1>
+    <div v-for="item in items" :key="item.id" class="item-container">
+    <div :class="{ 'special': item.special}">
+    <img :src=item.img alt="" class="item-img"> </div>
+     <div class="item-name">{{ item.name }}</div>
+     <div class="item-description">{{ item.description }}</div>
+     <div class="item-price"> <img src="../assets/coin.svg" > {{ item.price }} </div>
+     <button @click="buyItem(item)" class="buy-button">Use</button>
+     <div v-if="item.purchased" class="item-success-msg">{{ item.name }} purchased successfully!</div>
+     </div>
+     </div>
+     </template>
 
 <script>
 import { ref } from 'vue';
@@ -24,10 +26,10 @@ export default {
   setup() {
     const { user } = useAuth();
     const items = ref([
-      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 600, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/file-plus.svg?raw=true', purchased: false },
-      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 300, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/extra-drop.svg?raw=true', purchased: false },
-      { id: 3, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false },
-      { id: 4, name: 'Attack on Titan Pack', description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/aot.PNG?raw=true', purchased: false },
+      { id: 1, name: 'Instant Card Grab', description: 'Get an extra grab', price: 300, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/file-plus.svg?raw=true', purchased: false },
+      { id: 2, name: 'Instant Card Drop', description: 'Get an extra drop', price: 600, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/extra-drop.svg?raw=true', purchased: false },
+      { id: 3, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false, special: true  },
+      { id: 4, name: 'Attack on Titan Pack', description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/aot.PNG?raw=true', purchased: false, special: true },
     ]);
     const frameImgSrc = (rarity) => {
   switch (rarity) {
@@ -107,12 +109,9 @@ const buyItem = async (item) => {
     }
     else if (item.name === 'Naruto Pack') {
       const response = await fetch('https://api.jsonbin.io/v3/b/642c817dc0e7653a059dc7b1');
-      const data = await response.json();
-      console.log(data);
-      const cards = data.record.characters;
-      console.log(cards);
-      const randomCards = cards.sort(() => 0.5 - Math.random()).slice(0, 6);
-      console.log('Randomly selected 6 cards:', randomCards);
+      const data = await response.json();     
+      const cards = data.record.characters;      
+      const randomCards = cards.sort(() => 0.5 - Math.random()).slice(0, 6);    
       const batch = db.batch();
       const userCardsRef = db.collection('inventory');
       randomCards.forEach((card) => {
@@ -124,7 +123,7 @@ const buyItem = async (item) => {
           cardName: card.name,
           cardImg: card.image,
           cardSerie: card.serie,
-          cardId: newCardRef.id,
+          cardId: nanoid(8),
           userId: user.value.uid,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           rarity: rarity,
@@ -223,6 +222,7 @@ const buyItem = async (item) => {
   max-width: 350px;
 }
 
+
 .item-name {
   color: red;
   font-size: 18px;
@@ -252,6 +252,43 @@ const buyItem = async (item) => {
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
 }
+.item-img{
+    max-height: 100px;
+    height: 25%;
+    z-index: 9;
+}
+
+ .special {
+  position: relative;
+  overflow: hidden;
+  padding: 5px;
+}
+
+.special:before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  transform: rotate(45deg);
+  z-index: 1;
+  background: linear-gradient(to right, #f8a170, #ffcd75, #c6ff77, #70ffce, #72a6ff, #b77cff, #f770ff,#af1d1d,#6e0808);
+  background-size: 300% 300%;
+  animation: gradientAnimation 2s ease infinite;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}  rotate animation 
 
 .buy-button:hover {
   background-color: #b30000;

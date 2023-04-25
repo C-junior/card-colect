@@ -1,0 +1,155 @@
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import { reactive } from 'vue';
+
+export default {
+  name: 'AboutView',
+  data() {
+    return {
+      userInventory: reactive([]),
+      deleteItem: null,
+      showDeleteConfirmation: false,
+      newItem: null,
+      showNewItemDialog: false,
+      priceCard: '',
+      currencyCard: "gold",
+      selectedItem: null,
+      searchTerm: "",
+    }
+  },
+  async created() {
+    const db = firebase.firestore();
+    const user = firebase.auth().currentUser;
+    if (user) {
+      const querySnapshot = await db.collection("inventory").where("userId", "==", user.uid).get();
+      querySnapshot.forEach((doc) => {
+        this.userInventory.push({ ...doc.data(), id: doc.id });
+      });
+    }
+  },
+  methods: {
+    async addToMarket(item) {
+        const db = firebase.firestore();
+        const user = firebase.auth().currentUser;
+        const itemName = item.cardName;
+        
+    
+        
+        // Ask the user for the price and currency
+        const price = this.priceCard
+        if (price === null) {
+          // User clicked "Cancel" button
+          return;
+        }
+        const currency = this.currencyCard
+        if (currency === null) {
+          // User clicked "Cancel" button
+          return;
+        }
+        // Validate the price and currency
+        const parsedPrice = parseInt(price, 10);
+        if (isNaN(parsedPrice) || parsedPrice < 0) {
+          alert("Invalid price. Please enter a positive number.");
+          return;
+        }
+        const currencies = ['gold', 'gems'];
+        if (!currencies.includes(currency.toLowerCase())) {
+          alert("Invalid currency. Please enter either gold or gems.");
+          return;
+        }
+        
+        try {
+          // Add the item to the market collection
+          await db.collection("market").add({...item,
+            userId: user.uid,
+            price: parsedPrice,
+            currency: currency.toLowerCase(),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          });
+          
+          // Remove the item from the user's inventory collection
+          const inventoryItem = await db.collection("inventory").where("userId", "==", user.uid)
+            .where("cardName", "==", itemName).limit(1).get();
+          if (!inventoryItem.empty) {
+            await inventoryItem.docs[0].ref.delete();
+            this.userInventory = this.userInventory.filter((invItem) => invItem.id !== item.id);
+          }
+          
+          // alert(`${itemName} has been added to the market for ${parsedPrice} ${currency}.`);
+        } catch (error) {
+          console.error("Error adding document: ", error);
+          alert("Failed to add item to market. Please try again later.");
+        }
+      },
+    async confirmDelete(item) {
+      this.deleteItem = item;
+      this.showDeleteConfirmation = true;
+    },
+    async deleteItemConfirmed() {
+      const item = this.deleteItem;
+      const collectionName = "inventory";
+      const documentId = item.id;
+      try {
+        const db = firebase.firestore();
+        const docRef = db.collection(collectionName).doc(documentId);
+        const deletedItem = await docRef.get();
+        const data = deletedItem.data();
+        const { userId, burngold: itemGold } = data;
+        const userRef = db.collection("userProfiles").doc(userId);
+        await db.runTransaction(async (transaction) => {
+          const userDoc = await transaction.get(userRef);
+          if (!userDoc.exists) {
+            throw "User does not exist!";
+          }
+          const { gold: currentGold = 0 } = userDoc.data();
+          const newGold = currentGold + itemGold;
+          transaction.update(userRef, { gold: newGold });
+          transaction.delete(docRef);
+          console.log(`Document with ID ${documentId} successfully deleted from Firestore`);
+          this.userInventory = this.userInventory.filter((invItem) => invItem.id !== item.id);
+        });
+        this.showDeleteConfirmation = false;
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+      }
+    },
+    async deleteItemFromInventory() {
+      const db = firebase.firestore();
+      const user = firebase.auth().currentUser;
+      if (!this.deleteItem || !user) {
+        return;
+      }
+      try {
+        await db.collection("inventory").doc(this.deleteItem.id).delete();
+        this.showDeleteConfirmation = false;
+        alert(`Item "${this.deleteItem.cardName}" has been deleted from your inventory.`);
+        this.deleteItem = null;
+      } catch (error) {
+        console.error("Error deleting document: ", error);
+        alert("Failed to delete item from inventory. Please try again later.");
+      }
+    }, searchCards() {
+        const regex = new RegExp(this.searchTerm, 'i');
+        this.searchResults = this.userInventory.filter(item => {
+          return regex.test(item.cardName) || regex.test(item.cardSerie);
+        });
+      }
+  },
+  computed: {
+    searchResults() {
+        const regex = new RegExp(this.searchTerm, 'i');
+        return this.userInventory.filter(item => {
+          return regex.test(item.cardName) || regex.test(item.cardSerie);
+        });
+      },
+    goldForDeletedItem() {
+      return this.deleteItem?.burngold;
+    },
+    nameForDeletedItem() {
+      return this.deleteItem?.cardName;
+    },
+    nameForSelectedItem() {
+      return this.selectedItem?.cardName;
+    }
+  },
+};
