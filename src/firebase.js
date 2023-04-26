@@ -184,16 +184,16 @@ const sendMessage = image => {
                     frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-legendary.png";
                     break;
                   case 'epic':
-                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-epics.png";
+                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/epic-frame.png";
                     break;
                   case 'super-rare':
-                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-super-rare.png";
+                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/super-rare-frame.png";
                     break;
                   case 'rare':
-                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-rare.png";
+                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/rare-frame.png";
                     break;
                   case 'uncommon':
-                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-uncommon.png";
+                    frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/uncommon-frame.png";
                     break;
                   default:
                     frameImgSrc = "https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-common.png";

@@ -47,13 +47,13 @@ export default {
     case 'legendary':
       return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-legendary.png';
     case 'epic':
-      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-epics.png';
+      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/epic-frame.png';
     case 'super-rare':
-      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-super-rare.png';
+      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/super-rare-frame.png';
     case 'rare':
-      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-rare.png';
+      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/rare-frame.png';
     case 'uncommon':
-      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-uncommon.png';
+      return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/uncommon-frame.png';
     default:
       return 'https://res.cloudinary.com/dzclslnk5/image/upload/assets/frame-common.png';
   }
