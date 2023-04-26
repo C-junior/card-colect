@@ -51,7 +51,7 @@
           </div>
         <div class="stat-item">
           <img src="../assets/gem.svg" alt="send-count-icon" class="stat-svg">
-          <p class="stat-text"> 0 </p>
+          <p class="stat-text"> {{ gems }}</p>
         </div>
     </div>
 </div>
@@ -76,6 +76,7 @@
       const sendCount = ref(0);
       const getCount = ref(0);
       const gold = ref(0);
+      const gems = ref(0);
   
       watchEffect(() => {
         if (user.value) {
@@ -87,13 +88,14 @@
             sendCount.value = userData.sendCount || 0;
             getCount.value = userData.getCount || 0;
             gold.value = userData.burngold + userData.gold || 0;
+            gems.value = userData.gems || 0;
           }).catch((error) => {
             console.error('Error retrieving user data: ', error);
           });
         }
       });
   
-      return { user, sendCount, getCount, gold, isLogin };
+      return { user, sendCount, getCount, gold, isLogin, gems };
     }
   }
   </script>

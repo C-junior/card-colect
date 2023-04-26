@@ -1,7 +1,16 @@
 <template>
 <div class="shop-container">
     <h1 class="shop-title">Shop</h1>
-    <div v-for="item in items" :key="item.id" class="item-container">
+    <div v-for="item in itemsGem" :key="item.id" class="item-container">
+    <div :class="{ 'special': item.special}">
+    <img :src=item.img alt="" class="item-img"> </div>
+     <div class="item-name">{{ item.name }}</div>
+     <div class="item-description">{{ item.description }}</div>
+     <div class="item-price"> <img src="../assets/gemshop.svg" > {{ item.price }} </div>
+     <button @click="buyItem(item)" class="buy-button">Use</button>
+     <div v-if="item.purchased" class="item-success-msg">{{ item.name }} purchased successfully!</div>
+     </div>
+     <div v-for="item in itemsGold" :key="item.id" class="item-container">
     <div :class="{ 'special': item.special}">
     <img :src=item.img alt="" class="item-img"> </div>
      <div class="item-name">{{ item.name }}</div>
@@ -25,11 +34,13 @@ export default {
   name: 'ShopView',
   setup() {
     const { user } = useAuth();
-    const items = ref([
-      { id: 1, name: 'Instant Card Grab', description: 'Get an extra grab', price: 300, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/file-plus.svg?raw=true', purchased: false },
-      { id: 2, name: 'Instant Card Drop', description: 'Get an extra drop', price: 600, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/extra-drop.svg?raw=true', purchased: false },
-      { id: 3, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false, special: true  },
-      { id: 4, name: 'Attack on Titan Pack', description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/aot.PNG?raw=true', purchased: false, special: true },
+    const itemsGold = ref([
+      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 300, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/file-plus.svg?raw=true', purchased: false },
+      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 600, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/extra-drop.svg?raw=true', purchased: false },
+     ]);
+    const itemsGem = ref([
+      { id: 1, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false, special: true  },
+      { id: 2, name: 'Attack on Titan Pack', description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/aot.PNG?raw=true', purchased: false, special: true },
     ]);
     const frameImgSrc = (rarity) => {
   switch (rarity) {
@@ -76,9 +87,14 @@ const buyItem = async (item) => {
   const userProfileRef = db.collection('userProfiles').doc(user.value.uid);
   const userProfile = await userProfileRef.get();
   const gold = userProfile.get('gold');
+  const gems = userProfile.get('gems');
 
   if (gold < item.price) {
     console.log(`User does not have enough gold to buy ${item.name}`);
+    return;
+  }
+  if (gems < item.price) {
+    console.log(`User does not have enough gems to buy ${item.name}`);
     return;
   }
 
@@ -103,9 +119,9 @@ const buyItem = async (item) => {
     } else if (item.name === 'Extra Drop') {
       await userProfileRef.update({
         gold: gold - item.price,
-        dropAvaliable: Date.now()
+        sendAvaliable: Date.now()
       });
-      console.log('Naruto Pack purchased successfully');
+      console.log('Extra Drop purchased successfully');
     }
     else if (item.name === 'Naruto Pack') {
       const response = await fetch('https://api.jsonbin.io/v3/b/642c817dc0e7653a059dc7b1');
@@ -133,7 +149,7 @@ const buyItem = async (item) => {
       });
       await batch.commit();
       await userProfileRef.update({
-        gold: gold - item.price
+        gems: gems - item.price
       });
       console.log('Naruto Pack purchased successfully');
     }
@@ -166,7 +182,7 @@ const buyItem = async (item) => {
       });
       await batch.commit();
       await userProfileRef.update({
-        gold: gold - item.price
+        gems: gems - item.price
       });
       console.log('Attack on Titan Pack purchased successfully');
     }
@@ -183,7 +199,8 @@ const buyItem = async (item) => {
 };
 
     return {
-      items,
+      itemsGold,
+      itemsGem,
       buyItem,
     };
   },

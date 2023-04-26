@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import { nanoid } from 'nanoid';
-import LRU from 'lru-cache';
+//import LRU from 'lru-cache';
 
 import { ref, onUnmounted, computed } from 'vue'
 
@@ -58,18 +58,12 @@ const messagesRef = firebase.firestore().collection("messages");
 const cardRef = firebase.firestore().collection("inventory");
 const messagesQuery = messagesCollection.orderBy('createdAt', 'desc').limit(12)
 const invetoryQuery = inventoryCollection.orderBy('createdAt', 'desc')
-const cache = new LRU({
-  max: 100,
-  maxAge: 1000 * 60 * 5, // 5 minutes
-});
-
 export function useChat() {
-  const messages = ref(cache.get('messages') || []);
+  const messages = ref([]);
   const unsubscribe = messagesQuery.onSnapshot(snapshot => {
     messages.value = snapshot.docs
       .map(doc => ({ id: doc.id, ...doc.data() }))
       .reverse();
-    cache.set('messages', messages.value);
   });
   onUnmounted(unsubscribe);
            const naruto = 'https://api.jsonbin.io/v3/b/642c817dc0e7653a059dc7b1';

@@ -10,25 +10,30 @@
         <div class="container-inv">
       <ul class="card-list">
         <li class="card-item" v-for="(item, index) in searchResults" :key="index">
-          <div class="card-container">
-            <div class="card-img"> 
-            <img :src="item.cardImg" alt="card image">
-            <img class="frame-inv" :src="item.cardFrame" alt="card image">
-          </div>
-            <p class="card-name">{{ item.cardName }}</p>
-            <button  class="btn btn-outline-danger mb-2" @click="confirmDelete(item)">Delete</button>
-      <div v-if="showDeleteConfirmation && deleteItem.id === item.id">
-        <p>Are you sure you want to delete "{{ item.cardName }}" for {{ goldForDeletedItem }} gold ?</p>
-        <button @click="deleteItemConfirmed">Yes</button>
-        <button @click="showDeleteConfirmation = false">No</button>
-      </div>
- <!-- Add a button to delete the item -->
-            <button class="btn bg-black text-white" @click="selectedItem = item" data-bs-toggle="modal" data-bs-target="#priceModal">Add to Market</button>
-
-          </div>
-         
-        </li>
+  <div class="card-container" >
+    <div class="card-img" @click="showOverlay = index" > 
+      <img class="imagem-card" :src="item.cardImg" alt="card image">
+     
+      <img class="frame-inv" :src="item.cardFrame" alt="card image">
+    </div>
+    <p class="card-name">{{ item.cardName }}</p>
+    <button class="btn btn-outline-danger mb-2" @click="confirmDelete(item)">Delete</button>
+    <div v-if="showDeleteConfirmation && deleteItem.id === item.id">
+      <p>Are you sure you want to delete "{{ item.cardName }}" for {{ goldForDeletedItem }} gold ?</p>
+      <button @click="deleteItemConfirmed">Yes</button>
+      <button @click="showDeleteConfirmation = false">No</button>
+    </div>
+    <!-- Add a button to delete the item -->
+    <button class="btn bg-black text-white" @click="selectedItem = item" data-bs-toggle="modal" data-bs-target="#priceModal">Add to Market</button>
+  </div>
+  
+</li>
       </ul>
+      <div class="overlay" v-if="showOverlay !== null" @click.self="showOverlay = null">
+      <div class="content">
+        <img :src="searchResults[showOverlay].cardImg" alt="">
+      </div>
+    </div>
     </div> 
       
     </ul>
@@ -79,7 +84,7 @@
 <script>
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { reactive } from 'vue';
+import { reactive, watch } from 'vue';
 
 export default {
   name: 'AboutView',
@@ -94,6 +99,8 @@ export default {
       currencyCard: "gold",
       selectedItem: null,
       searchTerm: "",
+      showOverlay: null,     
+    
     }
   },
   async created() {
@@ -230,6 +237,13 @@ export default {
     nameForSelectedItem() {
       return this.selectedItem?.cardName;
     }
+  },
+  watch: {
+    showOverlay(newVal, oldVal) {
+      if (newVal !== oldVal && newVal === null) {
+        // Overlay was closed, reset any overlay-related data here
+      }
+    },
   },
 };
 </script>
@@ -377,13 +391,33 @@ ul {
 .card-img{
   display: block;
   text-align: center;
- 
-  overflow:hidden;
 } 
-/* tirar dps hover*/
-.card-img:hover{
-  transform: scale(1.5);
+
+/* overlay start img*/
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.content {
+  max-width: 80%;
+  max-height: 80%;
+  overflow: auto;
+}
+
+.content img {
+  width: 100%;
+  height: auto;
+}
+/* overlay end img*/
 .frame-inv {  
   position: absolute;
   left: 28px;
@@ -421,7 +455,6 @@ ul {
   
   .card-item:hover {
     transform: translateY(-5px);
-    transform: scale(1.5);
   }
   
   .card-container {
