@@ -23,31 +23,41 @@ export const auth = firebase.auth();
 
 //   }
  // try create a profile code
-  export function useAuth() {
-    const user = ref(null)
-    const unsubscribe = auth.onAuthStateChanged(_user => (user.value = _user))
-    onUnmounted(unsubscribe)
-    const isLogin = computed(() => user.value !== null)
-  
-    const signIn = async () => {
-      const googleProvider = new firebase.auth.GoogleAuthProvider()
-      await auth.signInWithPopup(googleProvider)
-      // Create a user profile if it doesn't exist
-      const userProfileRef = firestore.collection('userProfiles').doc(user.value.uid)
-      const userProfile = await userProfileRef.get()
-      if (!userProfile.exists) {
-        await userProfileRef.set({
-          gold: 0,
-          gems: 0,
-          sendCount: 0,
-          getCount: 0
-        })
-      }
+ export function useAuth() {
+  const user = ref(null)
+  const unsubscribe = auth.onAuthStateChanged(_user => (user.value = _user))
+  onUnmounted(unsubscribe)
+  const isLogin = computed(() => user.value !== null)
+
+  const signIn = async () => {
+    const googleProvider = new firebase.auth.GoogleAuthProvider()
+    await auth.signInWithPopup(googleProvider)
+    // Create a user profile if it doesn't exist
+    const userProfileRef = firestore.collection('userProfiles').doc(user.value.uid)
+    const userProfile = await userProfileRef.get()
+    if (!userProfile.exists) {
+      const { displayName, email } = user.value
+      await userProfileRef.set({
+        gold: 0,
+        gems: 0,
+        sendCount: 0,
+        getCount: 0,
+        userName: displayName || email.split('@')[0]
+      })
     }
-    const signOut = () => auth.signOut()
-  
-    return { user, isLogin, signIn, signOut }
+    // Update user profile with username if not already present
+    const userProfileData = userProfile.data()
+    if (!userProfileData.userName) {
+      const { displayName, email } = user.value
+      await userProfileRef.update({
+        userName: displayName || email.split('@')[0]
+      })
+    }
   }
+  const signOut = () => auth.signOut()
+
+  return { user, isLogin, signIn, signOut }
+}
 
   //end of try
 
@@ -171,8 +181,7 @@ const sendMessage = image => {
                 const userProfile = doc.data();
                 const agora = Date.now()
                 if (userProfile.grabAvaliable >= agora) {
-                  console.error('Error: no grabAvaliable left');
-                  clearInterval(intervalId); // Clear the interval when no grabAvaliable left
+                  console.error('Error: no grabAvaliable left');                 
                   return;
                 }
           

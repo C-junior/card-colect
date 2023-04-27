@@ -4,6 +4,7 @@ import AboutView from '../views/AboutView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import MarketView from '../views/MarketView.vue'
 import ShopView from '../views/ShopView.vue'
+import RankingView from '../views/RankingView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/marketplace',
       name: 'marketplace',
       component: MarketView
+    },
+    {
+      path: '/rankingplayer',
+      name: 'rankingplayer',
+      component: RankingView
     },
     {
      path: '/shopgoods',

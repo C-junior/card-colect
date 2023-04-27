@@ -98,14 +98,14 @@ export default {
 };
 
     
-    // Retrieve the messages from Firestore
-    messagesRef.orderBy('createdAt', 'desc').onSnapshot(querySnapshot => {
-     const newMessages = [];
-      querySnapshot.forEach(doc => {
-        newMessages.push(doc.data())
-      });    
-      messages.value = newMessages.splice(0, 6);
-    });
+    // // Retrieve the messages from Firestore
+    // messagesRef.orderBy('createdAt', 'desc').onSnapshot(querySnapshot => {
+    //  const newMessages = [];
+    //   querySnapshot.forEach(doc => {
+    //     newMessages.push(doc.data())
+    //   });    
+    //   messages.value = newMessages.splice(0, 6);
+    // });
     
     
   
@@ -195,6 +195,8 @@ width: 200px;
 .dropbtn{
   margin: auto;
   display: block;
+  width: 80% !important;
+  height: 46px !important;
 }
 .profile-btn{
   width: 90%;
