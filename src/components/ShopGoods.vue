@@ -37,6 +37,7 @@ export default {
     const itemsGold = ref([
       { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 300, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/file-plus.svg?raw=true', purchased: false },
       { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 600, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/extra-drop.svg?raw=true', purchased: false },
+      { id: 1, name: 'Recolor Frame', description: 'Change the tint of your frame randomly', price: 400, img: 'https://cdn.leonardo.ai/users/0d68a1c1-1a37-44c4-98dc-43ed5fda9265/generations/558b923d-8e03-4c5b-a1d3-b857276b9e74/variations/Default_a_magic_potion_colors_in_one_bottle_glass_flask_render_1_558b923d-8e03-4c5b-a1d3-b857276b9e74_0.png', purchased: false },
      ]);
     const itemsGem = ref([
       { id: 1, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false, special: true  },
@@ -122,6 +123,13 @@ const buyItem = async (item) => {
         sendAvaliable: Date.now()
       });
       console.log('Extra Drop purchased successfully');
+    }
+    else if (item.name === 'Recolor Frame') {
+      await userProfileRef.update({
+        gold: gold - item.price,
+        recolorFrame: (userProfile.get('recolorFrame') || 0) + 1
+      });
+      console.log('Recolor Frame purchased successfully');
     }
     else if (item.name === 'Naruto Pack') {
       const response = await fetch('https://api.jsonbin.io/v3/b/642c817dc0e7653a059dc7b1');

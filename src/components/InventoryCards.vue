@@ -12,9 +12,9 @@
         <li class="card-item" v-for="(item, index) in searchResults" :key="index">
   <div class="card-container" >
     <div class="card-img" @click="showOverlay = index" > 
-      <img class="imagem-card" :src="item.cardImg" alt="card image">
+      <img class="imagem-card" :src="item.cardImg" alt="card image" >
      
-      <img class="frame-inv" :src="item.cardFrame" alt="card image">
+      <img class="frame-inv" :src="item.cardFrame" alt="card image" :style="{ filter: item.recolorEffect }" >
     </div>
     <p class="card-name">{{ item.cardName }}</p>
     <button class="btn btn-outline-danger mb-2" @click="confirmDelete(item)">Delete</button>
@@ -26,7 +26,10 @@
     <!-- Add a button to delete the item -->
     <button class="btn bg-black text-white" @click="selectedItem = item" data-bs-toggle="modal" data-bs-target="#priceModal">Add to Market</button>
   </div>
-  
+  <div class="recolor-btn" v-if="userHasRecolorFrame" @click="applyRecolorEffect(item); decreaseRecolorFrame()">  
+    <span class="badge">{{  userProfiles.recolorFrame  }}</span>
+    <img  class="recolor-img" src="https://cdn.leonardo.ai/users/0d68a1c1-1a37-44c4-98dc-43ed5fda9265/generations/558b923d-8e03-4c5b-a1d3-b857276b9e74/variations/Default_a_magic_potion_colors_in_one_bottle_glass_flask_render_1_558b923d-8e03-4c5b-a1d3-b857276b9e74_0.png" alt="">
+   </div>
 </li>
       </ul>
       <div class="overlay" v-if="showOverlay !== null" @click.self="showOverlay = null">
@@ -84,13 +87,14 @@
 <script>
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { reactive, watch } from 'vue';
+import { reactive, watch} from 'vue';
 
 export default {
   name: 'AboutView',
   data() {
     return {
       userInventory: reactive([]),
+      userProfiles: reactive({}),
       deleteItem: null,
       showDeleteConfirmation: false,
       newItem: null,
@@ -100,20 +104,78 @@ export default {
       selectedItem: null,
       searchTerm: "",
       showOverlay: null,     
-    
+      userHasRecolorFrame: false, // New property
+      clickedItemIndex: -1, // add this property
     }
   },
+ 
   async created() {
+  const db = firebase.firestore();
+  const user = firebase.auth().currentUser;
+  if (user) {
+    // Fetch user inventory
+    const querySnapshot = await db.collection("inventory").where("userId", "==", user.uid).get();
+    querySnapshot.forEach((doc) => {
+      this.userInventory.push({ ...doc.data(), id: doc.id });
+    });
+
+     // fetch user profile
+  if (user) {
+    const userProfileRef = db.collection("userProfiles").doc(user.uid);
+    userProfileRef.onSnapshot((doc) => {
+      if (doc.exists) {
+        this.userProfiles = doc.data();
+      } else {
+        // user profile does not exist, handle it accordingly
+      }
+    });
+  }
+    // Check if user has any recolorFrame in their userProfile collection
+    const userProfileRef = db.collection("userProfiles").doc(user.uid);
+    console.log('userProfileRef:', userProfileRef);
+    const userProfileDoc = await userProfileRef.get();
+    if (userProfileDoc.exists) {
+      const userProfileData = userProfileDoc.data();
+      console.log('userProfileData.recolorFrame:', userProfileData.recolorFrame);
+      if (userProfileData.recolorFrame> 0) {
+        this.userHasRecolorFrame = true;
+        this.recolorFrameCount = userProfileData.recolorFrame; // set the recolor frame count
+      }
+    } else {
+      console.log("User profile document does not exist");
+  // Add user profile document with recolorFrame field
+  await userProfileRef.set({ recolorFrame: 0 });
+  console.log("User profile document added");
+    }
+  }
+},
+  methods: {
+  async applyRecolorEffect(item) {
+    const deg = Math.floor(Math.random() * 360);
+    item.recolorEffect = `hue-rotate(${deg}deg)`;
+    const db = firebase.firestore();
+    const inventoryRef = db.collection("inventory").doc(item.id);
+    await inventoryRef.update({
+      recolorEffect: item.recolorEffect
+    });
+  },
+
+  async decreaseRecolorFrame() {
     const db = firebase.firestore();
     const user = firebase.auth().currentUser;
     if (user) {
-      const querySnapshot = await db.collection("inventory").where("userId", "==", user.uid).get();
-      querySnapshot.forEach((doc) => {
-        this.userInventory.push({ ...doc.data(), id: doc.id });
-      });
+      const userProfileRef = db.collection("userProfiles").doc(user.uid);
+      const userProfileDoc = await userProfileRef.get();
+      if (userProfileDoc.exists) {
+        const userProfileData = userProfileDoc.data();
+        if (userProfileData.recolorFrame > 0) {
+          await userProfileRef.update({
+            recolorFrame: userProfileData.recolorFrame - 1
+          });
+        }
+      }
     }
   },
-  methods: {
     async addToMarket(item) {
         const db = firebase.firestore();
         const user = firebase.auth().currentUser;
@@ -375,7 +437,33 @@ input[type="text"] {
   background-size:28px;
 }
 
+.recolor-btn{
+  position: absolute;
+  top:0;
+  right: -10px;
+  z-index: 99;
+  
+}
+.recolor-btn .badge {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #831714;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
 
+.recolor-img{
+  width: 80px !important;
+}
 
 /* Search results list */
 ul {

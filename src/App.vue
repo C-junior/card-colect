@@ -1,59 +1,59 @@
 <template>
-<header class="main-header">
-  <div class="logo-container">
-    <img src="./assets/logogg.png" alt="Company Logo">
-    <h1>Gatcha <br> Game</h1>
+  <header class="main-header">
+    <div class="logo-container">
+      <img src="./assets/logogg.png" alt="Company Logo">
+      <h1>Gatcha <br> Game</h1>
+    </div>
+    <div class="profile-button"></div>
+    <div class="profile-button2"></div>
+  </header>
+  <div class="nav-border"></div>
+  <div v-if="!isMobile()">
+    <div class="nav-links">
+      <router-link to="/" @click="reloadPage()">Home</router-link> |
+      <router-link to="/about">Inventory</router-link> |
+      <router-link to="/marketplace">Card Market</router-link> |
+      <router-link to="/shopgoods">Item Shop</router-link> |
+      <router-link to="/rankingplayer">Ranking</router-link> |
+      <router-link to="/profile">Profile</router-link>
+    </div>
   </div>
-  <!-- <img class="logocenter" src="./assets/logogg.png" alt="Company Logo"> -->
-  <div class="profile-button"></div>
-  <div class="profile-button2"></div>
-
-
-</header>
-<div class="nav-border"></div>
-<div v-if="!isMobile()">
-  <div class="nav-links">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">Inventory</router-link> |
-    <router-link to="/marketplace">Card Market</router-link> |
-    <router-link to="/shopgoods">Item Shop</router-link> |
-    <router-link to="/rankingplayer">Ranking</router-link> |
-    <router-link to="/profile">Profile</router-link> 
-    
+  <div v-else>
+    <div class="nav-links-mobile">
+      <router-link to="/"><img src="./assets/home-icon.svg" alt=""></router-link>
+      <router-link to="/about"><img src="./assets/backpack-icon.svg" alt=""></router-link>
+      <router-link to="/marketplace"><img src="./assets/market-icon.svg" alt=""></router-link>
+      <router-link to="/shopgoods"> <img src="./assets/shop.svg" alt=""></router-link>
+      <router-link to="/rankingplayer"><img src="./assets/ranking.svg" alt=""></router-link>
+      <router-link to="/profile"><img src="./assets/profile-icon.svg" alt=""></router-link>
+    </div>
   </div>
-</div>
-<div v-else>
-  <div class="nav-links-mobile">
-    <router-link to="/"><img src="./assets/home-icon.svg" alt=""></router-link> 
-    <router-link to="/about"><img src="./assets/backpack-icon.svg" alt=""></router-link>   
-    <router-link to="/marketplace"><img src="./assets/market-icon.svg" alt=""></router-link>
-    <router-link to="/shopgoods"> <img src="./assets/shop.svg" alt=""></router-link>
-    <router-link to="/rankingplayer"><img src="./assets/ranking.svg" alt=""></router-link>
-    <router-link to="/profile"><img src="./assets/profile-icon.svg" alt=""></router-link> 
-  </div>
-</div>
-  <router-view/>
+  <router-view />
 </template>
 
 <script>
 import HomeView from './views/HomeView.vue';
-import {  RouterView } from 'vue-router'
+import { RouterView } from 'vue-router';
 
-export default{
-  components:{
+export default {
+  components: {
     HomeView
   },
   methods: {
- isMobile() {
-   if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-     return true
-   } else {
-     return false
-   }
- }
-}
+    isMobile() {
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return true
+      } else {
+        return false
+      }
+    },
+    reloadPage() {
+      window.location.reload();
+    }
+  }
 }
 </script>
+
 
 <style scoped>
 
