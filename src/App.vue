@@ -17,7 +17,7 @@
     <router-link to="/about">Inventory</router-link> |
     <router-link to="/marketplace">Card Market</router-link> |
     <router-link to="/shopgoods">Item Shop</router-link> |
-    <router-link to="/rankingplayer">Item Shop</router-link> |
+    <router-link to="/rankingplayer">Ranking</router-link> |
     <router-link to="/profile">Profile</router-link> 
     
   </div>
@@ -28,7 +28,7 @@
     <router-link to="/about"><img src="./assets/backpack-icon.svg" alt=""></router-link>   
     <router-link to="/marketplace"><img src="./assets/market-icon.svg" alt=""></router-link>
     <router-link to="/shopgoods"> <img src="./assets/shop.svg" alt=""></router-link>
-    <router-link to="/rankingplayer"><img src="./assets/backpack-icon.svg" alt=""></router-link>
+    <router-link to="/rankingplayer"><img src="./assets/ranking.svg" alt=""></router-link>
     <router-link to="/profile"><img src="./assets/profile-icon.svg" alt=""></router-link> 
   </div>
 </div>
@@ -86,7 +86,7 @@ export default{
     align-items: center;
     height: 50px;
     width: 50px;
-    margin: 0 10px;
+    margin: 0 5px;
     font-size: 24px;
     color: #000;
     background-color: rgb(20, 20, 20);

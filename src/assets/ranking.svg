@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve" width="512" height="512">
+<g>
+	
+		<polyline style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points="&#10;&#9;&#9;211,502 10,502 10,462 502,462 502,502 301,502 &#9;"/>
+	
+		<polyline style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points="&#10;&#9;&#9;482,461 482,256 332.333,256 &#9;"/>
+	<path style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;M306.962,199.014v-31.445h0c-17.1,0-30.962-13.862-30.962-30.962V128"/>
+	<path style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;M236,128v8.606c0,17.1-13.862,30.962-30.962,30.962h0v31.445"/>
+	<path style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;M256,129.907L256,129.907c-31.712,0-57.419-25.707-57.419-57.419V10h114.837v62.489C313.419,104.2,287.712,129.907,256,129.907z"/>
+	<path style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;M315.048,30.195h41.326v19.322c0,23.724-19.232,42.955-42.955,42.955h0"/>
+	<path style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;M196.952,30.195h-41.326v19.322c0,23.724,19.232,42.955,42.955,42.955h0"/>
+	<g>
+		
+			<polyline style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points="&#10;&#9;&#9;&#9;247.45,342 264.55,342 264.55,422 &#9;&#9;"/>
+	</g>
+	<g id="XMLID_1562_">
+		
+			<path id="XMLID_1560_" style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;&#9;M126.747,422H87.02c0,0,2.539-3.505,27.749-39.294c4.664-6.622,8.674-13.372,8.674-19.94c0-10.336-8.931-19.948-19.948-19.948&#10;&#9;&#9;&#9;c-9.694,0-17.774,6.915-19.574,16.082"/>
+	</g>
+	<g>
+		<path style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;&#9;M387.042,358.123c1.805-9.19,9.905-16.123,19.625-16.123c11.046,0,20,8.954,20,20c0,11.046-8.954,20-20,20"/>
+		<path style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;&#9;M406.667,382c11.046,0,20,8.954,20,20c0,11.046-8.954,20-20,20c-10.099,0-18.45-7.485-19.807-17.21&#10;&#9;&#9;&#9;c-0.127-0.912-0.193-1.843-0.193-2.79"/>
+	</g>
+	
+		<polyline style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points="&#10;&#9;&#9;179.667,302.408 30,302.408 30,461 &#9;"/>
+	
+		<rect x="180.667" y="200.014" style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" width="150.667" height="261.986"/>
+	
+		<line style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" x1="256" y1="502" x2="256" y2="502"/>
+	<path style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;M406.667,82.609L406.667,82.609c0-8.4-6.81-15.21-15.21-15.21v0c8.4,0,15.21-6.81,15.21-15.21h0c0,8.4,6.81,15.21,15.21,15.21v0&#10;&#9;&#9;C413.476,67.399,406.667,74.209,406.667,82.609z"/>
+	<path style="fill:none;stroke:#860E0E;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" d="&#10;&#9;&#9;M105.333,134.287L105.333,134.287c0-8.4-6.81-15.21-15.21-15.21v0c8.4,0,15.21-6.81,15.21-15.21h0c0,8.4,6.81,15.21,15.21,15.21v0&#10;&#9;&#9;C112.143,119.078,105.333,125.887,105.333,134.287z"/>
+</g>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</svg>

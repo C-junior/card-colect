@@ -32,10 +32,11 @@
   
   <script>
   import { ref, computed, onUnmounted } from 'vue';
-  import { firestore } from '@/firebase';
+  import { firestore, useAuth } from '@/firebase';
   
   export default {
     setup() {
+        const { user } = useAuth()
       const players = ref([]);
       const unsubscribe = firestore.collection('userProfiles').onSnapshot(async snapshot => {
         const docs = snapshot.docs;
@@ -48,7 +49,7 @@
             id: doc.id,
             userName: user.userName,
             inventoryCount,
-            photoUrl: user.photoUrl // Added photoUrl property
+            photoURL: user.photoURL,
           };
           players.value.push(player);
         }
