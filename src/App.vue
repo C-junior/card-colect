@@ -49,7 +49,9 @@ export default {
     },
     goToRootAndReload() {
       window.location.href = '/'
-      window.location.reload()
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
     }
   }
 }
