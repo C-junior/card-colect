@@ -10,7 +10,7 @@
   <div class="nav-border"></div>
   <div v-if="!isMobile()">
     <div class="nav-links">
-      <router-link to="/" @click="reloadPage()">Home</router-link> |
+      <a href="/" @click.prevent="goToRootAndReload">Home</a>  | 
       <router-link to="/about">Inventory</router-link> |
       <router-link to="/marketplace">Card Market</router-link> |
       <router-link to="/shopgoods">Item Shop</router-link> |
@@ -20,7 +20,7 @@
   </div>
   <div v-else>
     <div class="nav-links-mobile">
-      <router-link to="/"><img src="./assets/home-icon.svg" alt=""></router-link>
+      <a href="/" @click.prevent="goToRootAndReload"><img src="./assets/home-icon.svg" alt=""></a>
       <router-link to="/about"><img src="./assets/backpack-icon.svg" alt=""></router-link>
       <router-link to="/marketplace"><img src="./assets/market-icon.svg" alt=""></router-link>
       <router-link to="/shopgoods"> <img src="./assets/shop.svg" alt=""></router-link>
@@ -47,8 +47,9 @@ export default {
         return false
       }
     },
-    reloadPage() {
-      window.location.reload();
+    goToRootAndReload() {
+      window.location.href = '/'
+      window.location.reload()
     }
   }
 }

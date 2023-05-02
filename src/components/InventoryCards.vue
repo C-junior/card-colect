@@ -26,7 +26,7 @@
     <!-- Add a button to delete the item -->
     <button class="btn bg-black text-white" @click="selectedItem = item" data-bs-toggle="modal" data-bs-target="#priceModal">Add to Market</button>
   </div>
-  <div class="recolor-btn" v-if="userHasRecolorFrame" @click="applyRecolorEffect(item); decreaseRecolorFrame()">  
+  <div class="recolor-btn" v-if="userHasRecolorFrame && userProfiles.recolorFrame > 0" @click="applyRecolorEffect(item); decreaseRecolorFrame()">  
     <span class="badge">{{  userProfiles.recolorFrame  }}</span>
     <img  class="recolor-img" src="https://cdn.leonardo.ai/users/0d68a1c1-1a37-44c4-98dc-43ed5fda9265/generations/558b923d-8e03-4c5b-a1d3-b857276b9e74/variations/Default_a_magic_potion_colors_in_one_bottle_glass_flask_render_1_558b923d-8e03-4c5b-a1d3-b857276b9e74_0.png" alt="">
    </div>

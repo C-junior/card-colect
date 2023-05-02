@@ -91,7 +91,7 @@ const buyItem = async (item) => {
   const gems = userProfile.get('gems');
 
   if (gold < item.price) {
-    console.log(`User does not have enough gold to buy ${item.name}`);
+    console.log(`User does not have enough gold to buy ${item.name} `);
     return;
   }
   if (gems < item.price) {
