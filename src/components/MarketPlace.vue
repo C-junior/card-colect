@@ -75,6 +75,7 @@
   <style scoped>
    .title-page{
   text-align: center;
+  color: #831714;
  }
   .market-items {
     margin-top: 20px;

@@ -1,6 +1,8 @@
 
-  <template>
+  <!-- <template>
     <div class="container-profile">
+   
+
     <div class="profile-card">
       <div v-if="isLogin" >
         <div class="">         
@@ -8,10 +10,6 @@
             <img :src="user.photoURL" class="card-picture" alt="perfil">
         </div>
       </div>
-
-      <!-- <div class="card-profile-container">
-<img class="card-profile" src="https://cdn.leonardo.ai/users/0d68a1c1-1a37-44c4-98dc-43ed5fda9265/generations/c019041f-27e6-4618-b8a2-5e47f92647c8/DreamShaper_v5_NFT_detailed_face_Full_body_detailed_skin_fron_1.jpg?w=512" alt="">
-      </div> -->
 
 <div class="card-details">
   <img src="../assets/detail.svg" />
@@ -37,6 +35,9 @@
 </div>
     </div>
   </div>
+  </template> -->
+  <template>
+    
   </template>
 
   <script>
@@ -81,22 +82,6 @@
   </script>
 
 <style scoped>
-
-/* .card-profile-container{
-  border: #691818 solid 1px;
-  position: absolute;
-  top: 180px;
-  width: 100%;
-  z-index: 9;
-  
-}
-.card-profile{
-  border: whitesmoke solid 5px;
-  border-radius: 50%;
-  width: 96px;
-position: relative;
-left: calc(50% - 48px );
-} */
 
 .profile-card{
   height: 484px;
@@ -146,7 +131,6 @@ top: 230px;
   width: 60px;
 }
 .profile-container {
-  position: relative;
   display: flex;
   width: fit-content;
   margin: auto;

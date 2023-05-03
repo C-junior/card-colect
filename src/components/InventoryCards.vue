@@ -34,11 +34,26 @@
       </ul>
       <div class="overlay" v-if="showOverlay !== null" @click.self="showOverlay = null">
       <div class="content">
-        <img :src="searchResults[showOverlay].cardImg" alt="">
+        <div class="image-card-container" @click="isRotated = !isRotated">
+    <div class="image-card" :class="{ 'is-rotated': isRotated }">
+      <div class="image-front">
+        <img :src="searchResults[showOverlay].cardImg" alt="card image" />
+      </div>
+      <div class="image-back">
+        <img src="../assets/logogg.png" alt="" class="backlogo">
+        <h2>{{ searchResults[showOverlay].cardName }}</h2>
+        <div class="divider"></div>
+        <h3>{{ searchResults[showOverlay].userName }}</h3>
+        <p>Series: {{ searchResults[showOverlay].cardSerie }}</p>
+        <p>Rarity: {{ searchResults[showOverlay].rarity.toUpperCase() }}</p>
+        <!-- Add more details as needed -->
       </div>
     </div>
+  </div>
+      </div>    
+    </div>
     </div> 
-      
+     
     </ul>
   </div>
     <!-- Modal delete 
@@ -106,6 +121,7 @@ export default {
       showOverlay: null,     
       userHasRecolorFrame: false, // New property
       clickedItemIndex: -1, // add this property
+      isRotated: false,
     }
   },
  
@@ -437,6 +453,61 @@ input[type="text"] {
   background-size:28px;
 }
 
+/* start rotate img*/
+.image-card-container {
+  display: inline-block;
+  width: 250px;
+  height: 350px;
+  margin: 20px;
+  perspective: 1000px;
+}
+
+.image-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.8s;
+}
+.backlogo{
+  position: absolute;
+  overflow: hidden;
+  height: fit-content;
+  left: 0;
+  opacity: 0.1;
+}
+
+.divider{
+  background-color: #831714;
+  width: 90%;
+  height: 1px;
+  margin: auto;
+}
+.is-rotated {
+  transform: rotateY(180deg);
+}
+
+.image-front,
+.image-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+
+.image-back {
+  transform: rotateY(180deg);
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+  background-color: rgb(20, 20, 20);
+
+  color: rgb(240, 240, 240);
+  font-size: 1.2rem;
+  border: #831714 solid 3px;
+}
+
 .recolor-btn{
   position: absolute;
   top:0;
@@ -521,6 +592,7 @@ ul {
  }
  .title-page{
   text-align: center;
+  color: #831714;
  }
  .card-list {
     display: flex;

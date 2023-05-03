@@ -225,11 +225,10 @@ const buyItem = async (item) => {
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: rgb(43, 43, 43);
 }
 
 .shop-title {
-  color: red;
+  color: #831714;
   font-size: 24px;
   margin-bottom: 20px;
 }
@@ -240,7 +239,7 @@ const buyItem = async (item) => {
   align-items: center;
   margin-bottom: 20px;
   padding: 20px;
-  background-color: #1c1c1c;
+  background-color: rgb(36, 36, 36);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   width: 90%;
