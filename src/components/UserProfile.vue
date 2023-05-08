@@ -1,41 +1,40 @@
 
   <template>
-    <div class="container-profile">
-    <div class="profile-card">
+    
+  <div class="container-profile ">
+    <div class="special">
+    <div class="profile-card ">
       <div v-if="isLogin" >
         <div class="">         
             <p class="card-name">{{ user.displayName }}</p><br>
-            <img :src="user.photoURL" class="card-picture" alt="perfil">
+            <img :src="user.photoURL" class="card-picture" alt="">
         </div>
       </div>
 
-      <!-- <div class="card-profile-container">
-<img class="card-profile" src="https://cdn.leonardo.ai/users/0d68a1c1-1a37-44c4-98dc-43ed5fda9265/generations/c019041f-27e6-4618-b8a2-5e47f92647c8/DreamShaper_v5_NFT_detailed_face_Full_body_detailed_skin_fron_1.jpg?w=512" alt="">
-      </div> -->
+    <img class="card-img-profile" src="../assets/profile-card.svg" alt="">
 
-<div class="card-details">
-  <img src="../assets/detail.svg" />
-  <img class="logo-card" src="../assets/logogg.png" />
+    <div class="card-details">  
   <div class="stats-player">
     <div class="stat-item">
-          <img src="../assets/drop.svg" alt="send-count-icon" class="stat-svg">
+        <p class="stat-text">Dropadas</p>
           <p class="stat-text">{{ sendCount }}</p>
      </div>
      <div class="stat-item">
-          <img src="../assets/grab.svg" alt="send-count-icon" class="stat-svg">
+      <p class="stat-text">Obitidas</p>
           <p class="stat-text"> {{ getCount }}</p>
         </div>
         <div class="stat-item">
-            <img src="../assets/gold.svg" alt="gold-icon" class="stat-svg">
+          <p class="stat-text">Ouro</p>
             <p class="stat-text"> {{ gold }}</p>
           </div>
         <div class="stat-item">
-          <img src="../assets/gem.svg" alt="send-count-icon" class="stat-svg">
+          <p class="stat-text">Gemas</p>
           <p class="stat-text"> {{ gems }}</p>
         </div>
     </div>
 </div>
     </div>
+  </div>
   </div>
   </template>
 
@@ -82,44 +81,34 @@
 
 <style scoped>
 
-/* .card-profile-container{
-  border: #691818 solid 1px;
-  position: absolute;
-  top: 180px;
-  width: 100%;
-  z-index: 9;
-  
+.card-img-profile{
+position: absolute;
+top: 1px;
+width: 360px;
+z-index: -1;
 }
-.card-profile{
-  border: whitesmoke solid 5px;
-  border-radius: 50%;
-  width: 96px;
-position: relative;
-left: calc(50% - 48px );
-} */
-
 .profile-card{
-  height: 484px;
-  width: 260px;
-  background-color: black;
-  border: #691818 solid 10px;
-  margin: auto;
-  box-shadow: 1px 8px 6px 2px rgba(245, 244, 244, 0.733);
-  border-radius: 45px;
+  height: 640px;
+  width: 360px;
+  margin: auto; 
+  border-radius: 40px;
 }
 
 .card-name{
-  background-color: #b60c0c;
-  padding: 2px 8px;
+  font-weight: 900;
+  position: relative;
+  top: 20px;
   margin: 8px auto;
   border-radius: 8px;
   text-align: center;
   width: fit-content;
 }
 .card-picture{
-width: 240px;
-position: relative;
-top:-20px;
+border-radius: 50%;
+width: 120px;
+position: absolute;
+top:169px;
+left:127px;
 }
 .stats-player{
   position: relative;
@@ -127,24 +116,47 @@ top:-20px;
   left: 25px;
 }
 
-.card-details{
-  /* Rectangle 11 */
-
+.card-details{ 
 position: absolute;
-width: 246px;
-height: 236px;
-left: -15px;
-top: 230px;
-
-
+top: 532px;
 }
 
-.logo-card{
+.special {
+  position: relative;
+  overflow: hidden; 
+  width: 370px;
+  height: 604px;
+  border-radius: 20px; 
+  margin: auto;
+  z-index: -1;
+}
+
+.special:before {
+  content: '';
   position: absolute;
-  top:10px;
-  left: calc(50% - 18px);
-  width: 60px;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  transform: rotate(45deg);
+  z-index: -1;
+  background: linear-gradient(to right, #f8a170, #ffcd75, #490303, #490303, #72a6ff, #bea410, #bea410,#af1d1d,#6e0808);
+  background-size: 300% 300%;
+  animation: gradientAnimation 2s ease infinite;
 }
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}  rotate animation 
+
 .profile-container {
   position: relative;
   display: flex;
@@ -208,14 +220,15 @@ top: 230px;
   padding: 20px;
   border-radius: 8px;
   border-top: 2px solid rgb(73, 3, 3);
-  border-bottom: 2px solid  rgb(73, 3, 3);
+  border-bottom: 2px solid  #490303;
   width: 90%;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
+  margin-left: 28px;
+  margin-top: 12px;
 }
 
 .stat-icon {
@@ -227,7 +240,7 @@ top: 230px;
   font-family: 'Black Ops One', cursive;
   font-size: 16px;
   padding-left: 10px;
-  padding-bottom: 8px;
+  padding-bottom: 14px;
   margin: 0;
 }
 

@@ -90,12 +90,24 @@ const buyItem = async (item) => {
   const gold = userProfile.get('gold');
   const gems = userProfile.get('gems');
 
-  if (gold < item.price) {
+  if ( isNaN(gold) || gold < item.price) {
     console.log(`User does not have enough gold to buy ${item.name} `);
+    await Swal.fire({
+      title: 'Not enough Gold!',
+      text: `User does not have enough Gold to buy ${item.name}`,
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
     return;
   }
-  if (gems < item.price) {
+  if (isNaN(gems) || gems < item.price) {
     console.log(`User does not have enough gems to buy ${item.name}`);
+    await Swal.fire({
+      title: 'Not enough Gems!',
+      text: `User does not have enough gems to buy ${item.name}`,
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
     return;
   }
 
@@ -126,7 +138,7 @@ const buyItem = async (item) => {
     }
     else if (item.name === 'Recolor Frame') {
       await userProfileRef.update({
-        gold: gold - item.price,
+        gems: gems - item.price,
         recolorFrame: (userProfile.get('recolorFrame') || 0) + 1
       });
       console.log('Recolor Frame purchased successfully');
@@ -297,7 +309,7 @@ const buyItem = async (item) => {
   height: 200%;
   transform: rotate(45deg);
   z-index: 1;
-  background: linear-gradient(to right, #f8a170, #ffcd75, #c6ff77, #70ffce, #72a6ff, #b77cff, #f770ff,#af1d1d,#6e0808);
+  background: linear-gradient(to right, #f8a170, #ffcd75, #490303, #490303, #72a6ff, #bea410, #bea410,#af1d1d,#6e0808);
   background-size: 300% 300%;
   animation: gradientAnimation 2s ease infinite;
 }
