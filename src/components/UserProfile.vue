@@ -1,85 +1,191 @@
-
-  <template>
-    
-  <div class="container-profile ">
+<template>
+  <div  >
+    <button @click="openOverlay">Change</button>
     <div class="special">
-    <div class="profile-card ">
-      <div v-if="isLogin" >
-        <div class="">         
+      <div class="profile-card">
+        <div v-if="isLogin">
+          <div class="">
             <p class="card-name">{{ user.displayName }}</p><br>
             <img :src="user.photoURL" class="card-picture" alt="">
+          </div>
+        </div>
+        <img class="cover-placeholder" @click="openOverlay" src="../assets/cover-placeholder.svg" alt="" />
+        <img class="cover" @click="openOverlay" :src="selectedCard.cardImg" alt="" />
+        <span class="changeCover" @click="openOverlay">Toque para escolher sua capa</span>        
+        <img class="card-img-profile"  src="../assets/profile-card.svg" alt="">
+
+        <div class="card-details">
+          <div class="stats-player">
+            <div class="stat-item">
+              <p class="stat-text">Dropadas</p>
+              <p class="stat-text">{{ sendCount }}</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-text">Obitidas</p>
+              <p class="stat-text">{{ getCount }}</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-text">Ouro</p>
+              <p class="stat-text">{{ gold }}</p>
+            </div>
+            <div class="stat-item">
+              <p class="stat-text">Gemas</p>
+              <p class="stat-text">{{ gems }}</p>
+            </div>
+          </div>
         </div>
       </div>
-
-    <img class="card-img-profile" src="../assets/profile-card.svg" alt="">
-
-    <div class="card-details">  
-  <div class="stats-player">
-    <div class="stat-item">
-        <p class="stat-text">Dropadas</p>
-          <p class="stat-text">{{ sendCount }}</p>
-     </div>
-     <div class="stat-item">
-      <p class="stat-text">Obitidas</p>
-          <p class="stat-text"> {{ getCount }}</p>
-        </div>
-        <div class="stat-item">
-          <p class="stat-text">Ouro</p>
-            <p class="stat-text"> {{ gold }}</p>
-          </div>
-        <div class="stat-item">
-          <p class="stat-text">Gemas</p>
-          <p class="stat-text"> {{ gems }}</p>
-        </div>
     </div>
-</div>
+
+    <!-- Overlay -->
+    <div v-if="showOverlay" class="overlay">
+      <div class="card-options">
+        <div
+          v-for="card in userCards"
+          :key="card.id"
+          class="card-option"
+          @click="selectCard(card)"
+        >
+          <img :src="card.cardImg" alt="" class="card-option-image" />
+        </div>
+      </div>
     </div>
   </div>
-  </div>
-  </template>
+</template>
+<script>
+import Navbar from '../components/Login.vue';
+import { useAuth } from '@/firebase.js';
+import { ref, watchEffect } from 'vue';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 
-  <script>
-  import Navbar from '../components/Login.vue';
-  import { useAuth } from '@/firebase.js';
-  import { ref, watchEffect } from 'vue';
-  import firebase from 'firebase/app';
-  import 'firebase/firestore';
-  
-  export default {
-    components: {
-      Navbar
-    },
-    name: 'Profile',
-    setup() {
-      const { user, isLogin } = useAuth();
-      const sendCount = ref(0);
-      const getCount = ref(0);
-      const gold = ref(0);
-      const gems = ref(0);
-  
-      watchEffect(() => {
-        if (user.value) {
-          // Retrieve send count, get count, and gold from Firestore
-          const db = firebase.firestore();
-          const userRef = db.collection('userProfiles').doc(user.value.uid);
-          userRef.get().then((doc) => {
+export default {
+  components: {
+    Navbar
+  },
+  name: 'Profile',
+  setup() {
+    const { user, isLogin } = useAuth();
+    const sendCount = ref(0);
+    const getCount = ref(0);
+    const gold = ref(0);
+    const gems = ref(0);
+    const showOverlay = ref(false);
+    const selectedCard = ref({});
+
+    const userCards = ref([]);
+
+    const openOverlay = () => {
+      // Fetch user cards from the "inventory" collection
+      const db = firebase.firestore();
+      const inventoryRef = db.collection('inventory');
+      inventoryRef
+        .where('userId', '==', user.value.uid)
+        .get()
+        .then((querySnapshot) => {
+          userCards.value = querySnapshot.docs.map((doc) => doc.data());
+          showOverlay.value = true;
+          console.log(userCards.value)
+        })
+        .catch((error) => {
+          console.error('Error retrieving user cards: ', error);
+        });
+    };
+
+    const selectCard = (card) => {
+      selectedCard.value = card;
+      showOverlay.value = false;
+    };
+
+    watchEffect(() => {
+      if (user.value) {
+        // Retrieve send count, get count, and gold from Firestore
+        const db = firebase.firestore();
+        const userRef = db.collection('userProfiles').doc(user.value.uid);
+        userRef
+          .get()
+          .then((doc) => {
             const userData = doc.data();
             sendCount.value = userData.sendCount || 0;
             getCount.value = userData.getCount || 0;
             gold.value = userData.burngold + userData.gold || 0;
             gems.value = userData.gems || 0;
-          }).catch((error) => {
+          })
+          .catch((error) => {
             console.error('Error retrieving user data: ', error);
           });
-        }
-      });
-  
-      return { user, sendCount, getCount, gold, isLogin, gems };
-    }
+      }
+    });
+
+    return { user, sendCount, getCount, gold, isLogin, gems, showOverlay, selectedCard, userCards, openOverlay, selectCard };
   }
-  </script>
+}
+</script>
+
 
 <style scoped>
+.cover{
+  position: absolute;
+  top: 2px;
+  left: 13px;
+  height: 90%;
+  margin: auto;
+  z-index: -2;
+  border-radius: 16px;
+}
+.cover-placeholder{
+  position: absolute;
+  top: 2px;
+  left: 13px;
+  width: 345px;
+  height: 215px;
+
+  margin: auto;
+  z-index: -3;
+  border-radius: 16px;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  z-index: 999;
+}
+
+.card-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  max-width: 600px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 4px;
+}
+
+.card-option {
+  cursor: pointer;
+}
+
+.card-option-image {
+  width: 120px;
+  height: 160px;
+}
+
+
+.changeCover{
+  position: absolute;
+  right:30px;
+  color: black;
+  font-weight: 800;
+  z-index: -3;
+}
 
 .card-img-profile{
 position: absolute;
@@ -128,7 +234,7 @@ top: 532px;
   height: 604px;
   border-radius: 20px; 
   margin: auto;
-  z-index: -1;
+  z-index: -3;
 }
 
 .special:before {
@@ -139,7 +245,7 @@ top: 532px;
   width: 200%;
   height: 200%;
   transform: rotate(45deg);
-  z-index: -1;
+  z-index: -3;
   background: linear-gradient(to right, #f8a170, #ffcd75, #490303, #490303, #72a6ff, #bea410, #bea410,#af1d1d,#6e0808);
   background-size: 300% 300%;
   animation: gradientAnimation 2s ease infinite;
