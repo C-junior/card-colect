@@ -164,7 +164,9 @@ export default {
   console.log("User profile document added");
     }
   }
+  this.userInventory.sort((a, b) => b.createdAt - a.createdAt);
 },
+
   methods: {
   async applyRecolorEffect(item) {
     const deg = Math.floor(Math.random() * 360);

@@ -41,6 +41,7 @@ export default {
      ]);
     const itemsGem = ref([
       { id: 1, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false, special: true  },
+      { id: 1, name: 'Demon Slayer Pack', description: 'Get 6 Cards from Demon Slayer with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false, special: true  },
       { id: 2, name: 'Attack on Titan Pack', description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/aot.PNG?raw=true', purchased: false, special: true },
     ]);
     const frameImgSrc = (rarity) => {
@@ -100,7 +101,7 @@ const buyItem = async (item) => {
     });
     return;
   }
-  if (isNaN(gems) || gems < item.price) {
+ if (isNaN(gems) || gems < item.price) {
     console.log(`User does not have enough gems to buy ${item.name}`);
     await Swal.fire({
       title: 'Not enough Gems!',
@@ -172,6 +173,36 @@ const buyItem = async (item) => {
         gems: gems - item.price
       });
       console.log('Naruto Pack purchased successfully');
+    }
+    else if (item.name === 'Demon Slayer Pack') {
+      const response = await fetch('https://api.jsonbin.io/v3/b/64628da78e4aa6225e9dadc2');
+      const data = await response.json();     
+      const cards = data.record.characters;      
+      const randomCards = cards.sort(() => 0.5 - Math.random()).slice(0, 6);    
+      const batch = db.batch();
+      const userCardsRef = db.collection('inventory');
+      randomCards.forEach((card) => {
+        const newCardRef = userCardsRef.doc();
+        const rarity = card.rarity;
+        const cardGold = getCardGold(rarity);
+        const cardFrame = frameImgSrc(rarity);
+        batch.set(newCardRef, {
+          cardName: card.name,
+          cardImg: card.image,
+          cardSerie: card.serie,
+          cardId: nanoid(8),
+          userId: user.value.uid,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          rarity: rarity,
+          burngold: cardGold,
+          cardFrame: cardFrame,
+        });
+      });
+      await batch.commit();
+      await userProfileRef.update({
+        gems: gems - item.price
+      });
+      console.log('Demon Slayer Pack purchased successfully');
     }
     else if (item.name === 'Attack on Titan Pack') {
       const response = await fetch('https://api.jsonbin.io/v3/b/64385b2fc0e7653a05a3bf79');

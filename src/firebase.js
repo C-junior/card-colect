@@ -78,17 +78,19 @@ export function useChat() {
   onUnmounted(unsubscribe);
            const naruto = 'https://api.jsonbin.io/v3/b/642c817dc0e7653a059dc7b1';
            const shingeki = 'https://api.jsonbin.io/v3/b/64385b2fc0e7653a05a3bf79';
+           const demonslayer ='https://api.jsonbin.io/v3/b/64628da78e4aa6225e9dadc2';
            //const fefates = 'https://api.jsonbin.io/v3/b/63f927aeebd26539d084bb26/latest';
            const cards = [];
            
            Promise.all([
              fetch(naruto).then(response => response.json()),
-             fetch(shingeki).then(response => response.json())
+             fetch(shingeki).then(response => response.json()),
+             fetch(demonslayer).then(response => response.json())
            ])
              .then(data => {
                // Concatenate the character arrays from both sources
               // cards.push(...data[0].record.characters);
-               cards.push(...data[0].record.characters, ...data[1].record.characters);
+               cards.push(...data[0].record.characters, ...data[1].record.characters, ...data[2].record.characters);
                console.log(cards); // log the merged array to the console
              })
              .catch(error => {

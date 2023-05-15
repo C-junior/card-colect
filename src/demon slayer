@@ -1,0 +1,204 @@
+{
+  "characters": [
+    {
+      "name": "Tengen-Uzui",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Tengen-Uzui.png",
+      "serie": "Demon Slayer",
+      "rarity": "legendary"
+    },
+    {
+      "name": "Zenitsu",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Zenitsu.png",
+      "serie": "Demon Slayer",
+      "rarity": "uncommon"
+    },
+    {
+      "name": "Tokito-Muitiro",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Tokito-Muitiro.png",
+      "serie": "Demon Slayer",
+      "rarity": "uncommon"
+    },
+    {
+      "name": "Yoriichi-Tsugikuni",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Yoriichi-Tsugikuni.png",
+      "serie": "Demon Slayer",
+      "rarity": "rare"
+    },
+    {
+      "name": "Tanjiro-Kamado",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Tanjiro-Kamado.png",
+      "serie": "Demon Slayer",
+      "rarity": "legendary"
+    },
+    {
+      "name": "Spider-Sister",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Spider-Sister.png",
+      "serie": "Demon Slayer",
+      "rarity": "common"
+    },
+    {
+      "name": "Spider-Father",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Spider-Father.png",
+      "serie": "Demon Slayer",
+      "rarity": "common"
+    },
+    {
+      "name": "Suma-Uzui",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Suma-Uzui.png",
+      "serie": "Demon Slayer",
+      "rarity": "common"
+    },
+    {
+      "name": "Spider-Mother",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Spider-Mother.png",
+      "serie": "Demon Slayer",
+      "rarity": "common"
+    },
+    {
+      "name": "Nezuko-Demon",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Nezuko-Demon.png",
+      "serie": "Demon Slayer",
+      "rarity": "legendary"
+    },
+    {
+      "name": "Shinobu-Kochou",
+      "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Shinobu-Kochou.png",
+      "serie": "Demon Slayer",
+      "rarity": "super-rare"
+    }
+ ,
+      {
+        "name": "Sanemi-Shinazugawa",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Sanemi-Shinazugawa.png",
+        "serie": "Demon Slayer",
+        "rarity": "rare"
+      },
+      {
+        "name": "Sabito",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Sabito.png",
+        "serie": "Demon Slayer",
+        "rarity": "common"
+      },
+      {
+        "name": "Rengoku-Kyoujurou",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Rengoku-Kyoujurou.png",
+        "serie": "Demon Slayer",
+        "rarity": "epic"
+      },
+      {
+        "name": "Nezuko",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Nezuko.png",
+        "serie": "Demon Slayer",
+        "rarity": "epic"
+      },
+      {
+        "name": "Muzan-Kibutsuji",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Muzan-Kibutsuji.png",
+        "serie": "Demon Slayer",
+        "rarity": "legendary"
+      },
+      {
+        "name": "Makomo",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Makomo.png",
+        "serie": "Demon Slayer",
+        "rarity": "common"
+      },
+      {
+        "name": "Kokushibo",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Kokushibo.png",
+        "serie": "Demon Slayer",
+        "rarity": "epic"
+      },
+      {
+        "name": "Mitsuri-Kanroji",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Mitsuri-Kanroji.png",
+        "serie": "Demon Slayer",
+        "rarity": "epic"
+      },
+      {
+        "name": "Makio-Uzui",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Makio-Uzui.png",
+        "serie": "Demon Slayer",
+        "rarity": "common"
+      },
+      {
+        "name": "Kanao",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Kanao.png",
+        "serie": "Demon Slayer",
+        "rarity": "uncommon"
+      },
+      {
+        "name": "Inosuke-Hashibira-Unmasked",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Inosuke-Hashibira-Unmasked.png",
+        "serie": "Demon Slayer",
+        "rarity": "epic"
+      },
+      {
+        "name": "Inosuke-Hashibira",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Inosuke-Hashibira.png",
+        "serie": "Demon Slayer",
+        "rarity": "super-rare"
+      },
+      {
+        "name": "Iguro-Obanai",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Iguro-Obanai.png",
+        "serie": "Demon Slayer",
+        "rarity": "uncommon"
+      },
+      {
+        "name": "Hinatsuru-Uzui",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Hinatsuru-Uzui.png",
+        "serie": "Demon Slayer",
+        "rarity": "common"
+      },
+      {
+        "name": "Kagaya-Ubuyashiki",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Kagaya-Ubuyashiki.png",
+        "serie": "Demon Slayer",
+        "rarity": "rare"
+      },
+      {
+        "name": "Gyutaro",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Gyutaro.png",
+        "serie": "Demon Slayer",
+        "rarity": "uncommon"
+      },
+      {
+        "name": "Gyomei-Himejima",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Gyomei-Himejima.png",
+        "serie": "Demon Slayer",
+        "rarity": "super-rare"
+      },
+      {
+        "name": "Giyu-Tomioka",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Giyu-Tomioka.png",
+        "serie": "Demon Slayer",
+        "rarity": "rare"
+      },
+      {
+        "name": "Daki-Demon",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Daki-Demon.png",
+        "serie": "Demon Slayer",
+        "rarity": "epic"
+      },
+      {
+        "name": "Enmu",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Enmu.png",
+        "serie": "Demon Slayer",
+        "rarity": "uncommon"
+      },
+      {
+        "name": "Daki",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Daki.png",
+        "serie": "Demon Slayer",
+        "rarity": "rare"
+      },
+      {
+        "name": "Akaza",
+        "image": "https://res.cloudinary.com/dzclslnk5/image/upload/DemonSlayer/Akaza.png",
+        "serie": "Demon Slayer",
+        "rarity": "super-rare"
+      }
+    ]
+  }
+  
