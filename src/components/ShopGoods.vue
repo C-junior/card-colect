@@ -41,7 +41,7 @@ export default {
      ]);
     const itemsGem = ref([
       { id: 1, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false, special: true  },
-      { id: 1, name: 'Demon Slayer Pack', description: 'Get 6 Cards from Demon Slayer with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false, special: true  },
+      { id: 1, name: 'Demon Slayer Pack', description: 'Get 6 Cards from Demon Slayer with Epic or Legendary Guarantee', price: 1200, img: 'https://raw.githubusercontent.com/C-junior/card-colect/master/src/assets/dsshop.png', purchased: false, special: true  },
       { id: 2, name: 'Attack on Titan Pack', description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/aot.PNG?raw=true', purchased: false, special: true },
     ]);
     const frameImgSrc = (rarity) => {
