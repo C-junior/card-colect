@@ -1,6 +1,6 @@
 <template>
-  <div  >
-    <button @click="openOverlay">Change</button>
+  <div >
+    <div class="changeCoverImg" @click="openOverlay"></div>    
     <div class="special">
       <div class="profile-card">
         <div v-if="isLogin">
@@ -9,9 +9,9 @@
             <img :src="user.photoURL" class="card-picture" alt="">
           </div>
         </div>
-        <img class="cover-placeholder" @click="openOverlay" src="../assets/cover-placeholder.svg" alt="" />
-        <img class="cover" @click="openOverlay" :src="selectedCard.cardImg" alt="" />
-        <span class="changeCover" @click="openOverlay">Toque para escolher sua capa</span>        
+        <img class="cover-placeholder" src="../assets/cover-placeholder.svg" alt="" />
+        <img class="cover" :src="cardImg" alt="" />
+        <span class="changeCover" >Toque para escolher sua capa</span>        
         <img class="card-img-profile"  src="../assets/profile-card.svg" alt="">
 
         <div class="card-details">
@@ -33,10 +33,16 @@
               <p class="stat-text">{{ gems }}</p>
             </div>
           </div>
-        </div>
+        </div>    
+           <!-- Naruto Badge -->
+           <div  class="badges">
+      <img v-if="hasNarutoBadge" class="anime-badge" src="../assets/narutochibi.png" alt="Naruto Badge" />
+      <img v-if="hasDemonSlayerBadge" class="anime-badge" src="../assets/chibilol1.png" alt="Naruto Badge" />
+      <img v-if="hasAttackOnTitanBadge" class="anime-badge" src="../assets/chibilol2.png" alt="Naruto Badge" />
+    </div> 
       </div>
-    </div>
-
+    </div>       
+  </div>
     <!-- Overlay -->
     <div v-if="showOverlay" class="overlay">
       <div class="card-options">
@@ -50,9 +56,10 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
+
 <script>
+
 import Navbar from '../components/Login.vue';
 import { useAuth } from '@/firebase.js';
 import { ref, watchEffect } from 'vue';
@@ -70,9 +77,12 @@ export default {
     const getCount = ref(0);
     const gold = ref(0);
     const gems = ref(0);
+    const cardImg = ref('');
     const showOverlay = ref(false);
     const selectedCard = ref({});
-
+    const hasNarutoBadge = ref(false);
+    const hasDemonSlayerBadge = ref(false)
+    const hasAttackOnTitanBadge = ref(false)
     const userCards = ref([]);
 
     const openOverlay = () => {
@@ -85,7 +95,6 @@ export default {
         .then((querySnapshot) => {
           userCards.value = querySnapshot.docs.map((doc) => doc.data());
           showOverlay.value = true;
-          console.log(userCards.value)
         })
         .catch((error) => {
           console.error('Error retrieving user cards: ', error);
@@ -95,6 +104,20 @@ export default {
     const selectCard = (card) => {
       selectedCard.value = card;
       showOverlay.value = false;
+
+      // Update user profile with the selected card's image URL
+      const db = firebase.firestore();
+      const userRef = db.collection('userProfiles').doc(user.value.uid);
+      userRef
+        .update({
+          cardImg: card.cardImg
+        })
+        .then(() => {
+          console.log('User profile updated with selected card image.');
+        })
+        .catch((error) => {
+          console.error('Error updating user profile:', error);
+        });
     };
 
     watchEffect(() => {
@@ -110,20 +133,108 @@ export default {
             getCount.value = userData.getCount || 0;
             gold.value = userData.burngold + userData.gold || 0;
             gems.value = userData.gems || 0;
+            cardImg.value = userData.cardImg || null;
           })
           .catch((error) => {
             console.error('Error retrieving user data: ', error);
           });
+     // Check if the user has 30+ non-repeated Naruto cards
+     const inventoryRef = db.collection('inventory');
+        inventoryRef
+          .where('userId', '==', user.value.uid)
+          .where('cardSerie', '==', 'Naruto')
+          .get()
+          .then((querySnapshot) => {
+            const cardNames = new Set();
+            querySnapshot.forEach((doc) => {
+              const card = doc.data();
+              cardNames.add(card.cardName);
+            });
+            hasNarutoBadge.value = cardNames.size >= 26;
+          })
+          .catch((error) => {
+            console.error('Error checking Naruto badge:', error);
+          });
+             // Check if the user has 30+ non-repeated Naruto cards
+        inventoryRef
+          .where('userId', '==', user.value.uid)
+          .where('cardSerie', '==', 'Demon Slayer')
+          .get()
+          .then((querySnapshot) => {
+            const cardNames = new Set();
+            querySnapshot.forEach((doc) => {
+              const card = doc.data();
+              cardNames.add(card.cardName);
+            });
+            hasDemonSlayerBadge.value = cardNames.size >= 16;
+          })
+          .catch((error) => {
+            console.error('Error checking Demon Slayer badge:', error);
+          });
+          inventoryRef
+      .where('userId', '==', user.value.uid)
+      .where('cardSerie', '==', 'Attack on Titan')
+      .get()
+      .then((querySnapshot) => {
+        const cardNames = new Set();
+        querySnapshot.forEach((doc) => {
+          const card = doc.data();
+          cardNames.add(card.cardName);
+        });
+        hasAttackOnTitanBadge.value = cardNames.size >= 10;
+      })
+      .catch((error) => {
+        console.error('Error checking Attack on Titan badge:', error);
+      });
       }
     });
 
-    return { user, sendCount, getCount, gold, isLogin, gems, showOverlay, selectedCard, userCards, openOverlay, selectCard };
+    return {
+      user,
+      sendCount,
+      getCount,
+      gold,
+      isLogin,
+      gems,
+      cardImg,
+      showOverlay,
+      selectedCard,
+      userCards,
+      openOverlay,
+      selectCard,
+      hasNarutoBadge,
+      hasDemonSlayerBadge,
+      hasAttackOnTitanBadge
+    };
   }
-}
+};
 </script>
 
 
 <style scoped>
+.badges{
+  position: absolute;
+  bottom: 108px;
+  right: 20px;
+  border: #490303 2px solid;
+  width: 140px;
+  height: 170px;
+}
+.anime-badge{
+  width: 60px;
+  height: 60px;
+}
+
+.changeCoverImg{
+  width: 360px;
+  position: absolute;
+  height: 200px;
+  top: 20px;
+  left: calc(50% - 180px);
+  z-index: 2;
+  cursor: pointer
+  
+}
 .cover{
   position: absolute;
   top: 2px;
@@ -146,10 +257,10 @@ export default {
 }
 .overlay {
   position: fixed;
-  top: 0;
+  top: 20px;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 90%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
