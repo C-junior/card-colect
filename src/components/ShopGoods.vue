@@ -1,6 +1,7 @@
 <template>
 <div class="shop-container">
-    <h1 class="shop-title">Shop</h1>
+    <h1 class="title-page">Shop</h1>
+    <div class="item-row">
     <div v-for="item in itemsGem" :key="item.id" class="item-container">
     <div :class="{ 'special': item.special}">
     <img :src=item.img alt="" class="item-img"> </div>
@@ -10,6 +11,7 @@
      <button @click="buyItem(item)" class="buy-button">Use</button>
      <div v-if="item.purchased" class="item-success-msg">{{ item.name }} purchased successfully!</div>
      </div>
+    
      <div v-for="item in itemsGold" :key="item.id" class="item-container">
     <div :class="{ 'special': item.special}">
     <img :src=item.img alt="" class="item-img"> </div>
@@ -19,6 +21,7 @@
      <button @click="buyItem(item)" class="buy-button">Use</button>
      <div v-if="item.purchased" class="item-success-msg">{{ item.name }} purchased successfully!</div>
      </div>
+    </div>
      </div>
      </template>
 
@@ -34,16 +37,6 @@ export default {
   name: 'ShopView',
   setup() {
     const { user } = useAuth();
-    const itemsGold = ref([
-      { id: 1, name: 'Extra Grab', description: 'Get an extra grab', price: 300, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/file-plus.svg?raw=true', purchased: false },
-      { id: 2, name: 'Extra Drop', description: 'Get an extra drop', price: 600, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/extra-drop.svg?raw=true', purchased: false },
-      { id: 1, name: 'Recolor Frame', description: 'Change the tint of your frame randomly', price: 400, img: 'https://cdn.leonardo.ai/users/0d68a1c1-1a37-44c4-98dc-43ed5fda9265/generations/558b923d-8e03-4c5b-a1d3-b857276b9e74/variations/Default_a_magic_potion_colors_in_one_bottle_glass_flask_render_1_558b923d-8e03-4c5b-a1d3-b857276b9e74_0.png', purchased: false },
-     ]);
-    const itemsGem = ref([
-      { id: 1, name: 'Naruto Pack', description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true', purchased: false, special: true  },
-      { id: 1, name: 'Demon Slayer Pack', description: 'Get 6 Cards from Demon Slayer with Epic or Legendary Guarantee', price: 1200, img: 'https://raw.githubusercontent.com/C-junior/card-colect/master/src/assets/dsshop.png', purchased: false, special: true  },
-      { id: 2, name: 'Attack on Titan Pack', description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee', price: 1200, img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/aot.PNG?raw=true', purchased: false, special: true },
-    ]);
     const frameImgSrc = (rarity) => {
   switch (rarity) {
     case 'legendary':
@@ -77,9 +70,71 @@ const getCardGold = (rarity) => {
       return Math.floor(Math.random() * 10) + 2;
   }
 };
+const itemsGold = ref([
+  {
+    id: 1,
+    name: 'Extra Grab',
+    description: 'Reset the Grab cooldown',
+    price: 300,
+    img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/file-plus.svg?raw=true',
+    purchased: false,
+    priceType: 'gold'
+  },
+  {
+    id: 2,
+    name: 'Extra Drop',
+    description: 'Reset the Drop cooldown',
+    price: 600,
+    img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/extra-drop.svg?raw=true',
+    purchased: false,
+    priceType: 'gold'
+  },
+  {
+    id: 3,
+    name: 'Recolor Frame',
+    description: 'Change the tint of your frame randomly',
+    price: 400,
+    img: 'https://cdn.leonardo.ai/users/0d68a1c1-1a37-44c4-98dc-43ed5fda9265/generations/558b923d-8e03-4c5b-a1d3-b857276b9e74/variations/Default_a_magic_potion_colors_in_one_bottle_glass_flask_render_1_558b923d-8e03-4c5b-a1d3-b857276b9e74_0.png',
+    purchased: false,
+    priceType: 'gold'
+  },
+]);
+
+const itemsGem = ref([
+  {
+    id: 1,
+    name: 'Naruto Pack',
+    description: 'Get 6 Cards from Naruto with Epic or Legendary Guarantee',
+    price: 1200,
+    img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/narutopack.jpg?raw=true',
+    purchased: false,
+    special: true,
+    priceType: 'gems'
+  },
+  {
+    id: 2,
+    name: 'Demon Slayer Pack',
+    description: 'Get 6 Cards from Demon Slayer with Epic or Legendary Guarantee',
+    price: 1200,
+    img: 'https://raw.githubusercontent.com/C-junior/card-colect/master/src/assets/dsshop.png',
+    purchased: false,
+    special: true,
+    priceType: 'gems'
+  },
+  {
+    id: 3,
+    name: 'Attack on Titan Pack',
+    description: 'Get 6 Cards from Attack on Titan with Epic or Legendary Guarantee',
+    price: 1200,
+    img: 'https://github.com/C-junior/card-colect/blob/master/src/assets/aot.PNG?raw=true',
+    purchased: false,
+    special: true,
+    priceType: 'gems'
+  },
+]);
 
 
-const buyItem = async (item) => {
+    const buyItem = async (item) => {
   if (!user.value) {
     console.log('User not logged in');
     return;
@@ -91,25 +146,28 @@ const buyItem = async (item) => {
   const gold = userProfile.get('gold');
   const gems = userProfile.get('gems');
 
-  if ( isNaN(gold) || gold < item.price) {
-    console.log(`User does not have enough gold to buy ${item.name} `);
-    await Swal.fire({
-      title: 'Not enough Gold!',
-      text: `User does not have enough Gold to buy ${item.name}`,
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    return;
-  }
- if (isNaN(gems) || gems < item.price) {
-    console.log(`User does not have enough gems to buy ${item.name}`);
-    await Swal.fire({
-      title: 'Not enough Gems!',
-      text: `User does not have enough gems to buy ${item.name}`,
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-    return;
+  if (item.priceType === 'gold') {
+    if (isNaN(gold) || gold < item.price) {
+      console.log(`User does not have enough gold to buy ${item.name}`);
+      await Swal.fire({
+        title: 'Not enough Gold!',
+        text: `User does not have enough Gold to buy ${item.name}`,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+  } else if (item.priceType === 'gems') {
+    if (isNaN(gems) || gems < item.price) {
+      console.log(`User does not have enough gems to buy ${item.name}`);
+      await Swal.fire({
+        title: 'Not enough Gems!',
+        text: `User does not have enough gems to buy ${item.name}`,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
   }
 
   let confirmation = await Swal.fire({
@@ -124,6 +182,19 @@ const buyItem = async (item) => {
   });
 
   if (confirmation.isConfirmed) {
+    if (item.priceType === 'gold') {
+      await userProfileRef.update({
+        gold: gold - item.price,
+        grabAvailable: Date.now()
+      });
+      console.log('Item purchased successfully with gold');
+    } else if (item.priceType === 'gems') {
+      await userProfileRef.update({
+        gems: gems - item.price,
+        sendAvailable: Date.now()
+      });
+      console.log('Item purchased successfully with gems');
+    } 
     if (item.name === 'Extra Grab') {
       await userProfileRef.update({
         gold: gold - item.price,
@@ -270,25 +341,29 @@ const buyItem = async (item) => {
   padding: 20px;
 }
 
-.shop-title {
+.title-page{
+  text-align: center;
   color: #831714;
-  font-size: 24px;
-  margin-bottom: 20px;
-}
+ }
+ .item-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
 
-.item-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-  padding: 20px;
-  background-color: rgb(36, 36, 36);
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 350px;
-}
-
+  .item-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: rgb(36, 36, 36);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 350px;
+  }
 
 .item-name {
   color: red;
@@ -321,7 +396,7 @@ const buyItem = async (item) => {
 }
 .item-img{
     max-height: 100px;
-    height: 25%;
+    width: auto;
     z-index: 9;
 }
 
@@ -360,10 +435,10 @@ const buyItem = async (item) => {
 .buy-button:hover {
   background-color: #b30000;
 }
-@media (min-width: 576px) {
+/* @media (min-width: 576px) {
   .item-container {
     width: 50%;
     max-width: none;
   }
-}
+} */
 </style>
