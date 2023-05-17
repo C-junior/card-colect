@@ -6,7 +6,8 @@
     <div class="profile-btn" v-if="isLogin">  <h5> {{ user.displayName }}</h5>    
     </div> 
     </div>
-    <img  class="dropbtn" src="../assets/btn.svg" alt="" @click="send">
+    <img v-if="dropbtnEnabled" class="dropbtn" :class="{ 'enabled': dropbtnEnabled }" src="../assets/btn.svg" alt="" @click="send">
+    <p v-if="!dropbtnEnabled" class="loading-text">Waiting for data to be set...</p>
 
 
     <br><br>
@@ -33,7 +34,7 @@
 
 <script>
 import Navbar from '../components/Login.vue';
-import { ref, computed, watchEffect } from 'vue'
+import { ref, onUnmounted, watchEffect } from 'vue'
 import { useAuth, useChat } from '@/firebase'
 
 
@@ -48,6 +49,17 @@ export default {
     const messages = ref([]);
     const { sendMessage, messagesRef, getCard,  inventoryRef } = useChat()
     const message = ref('')
+
+    const dropbtnEnabled = ref(false);
+    let loadingTimeout;
+
+    loadingTimeout = setTimeout(() => {
+      dropbtnEnabled.value = true;
+    }, 2500);
+
+    onUnmounted(() => {
+      clearTimeout(loadingTimeout);
+    });
     
     watchEffect(onInvalidate => {
       const unsubscribe = messagesRef.orderBy('createdAt', 'desc').onSnapshot(querySnapshot => {
@@ -55,7 +67,7 @@ export default {
         querySnapshot.forEach(doc => {
           newMessages.push(doc.data())
         });
-        messages.value = newMessages.splice(0, 6);
+        messages.value = newMessages.splice(0, 12);
       });
 
       onInvalidate(() => {
@@ -109,12 +121,23 @@ export default {
     
     
   
-    return { user, isLogin, messages,  message, send , pegar,  inventoryRef };
+    return { user, isLogin, messages,  message, send , pegar, dropbtnEnabled,  inventoryRef };
   }
 }
 </script>
 
 <style scoped>
+
+.dropbtn.enabled {
+ filter: hue-rotate(120);
+}
+
+.loading-text {
+  color: gray;
+  font-style: italic;
+  text-align: center;
+  margin-top: 10px;
+}
 .top-nav {
   display: inline-flex;
   flex-direction: row-reverse;
