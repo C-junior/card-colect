@@ -130,6 +130,7 @@ export default {
 
 .dropbtn.enabled {
  filter: hue-rotate(120);
+ cursor: pointer;
 }
 
 .loading-text {
@@ -218,7 +219,6 @@ width: 200px;
 .dropbtn{
   margin: auto;
   display: block;
-  width: 80% !important;
   height: 46px !important;
 }
 .profile-btn{

@@ -10,7 +10,12 @@
   margin-bottom: 60px;  
   /* background-image: url(./logogg.png);
   background-repeat: no-repeat;
-  background-size: cover;  */
+  background-size: cover;  */ 
+}
+body{
+  background-image: url("/src/assets/bg.svg");
+  background-repeat: no-repeat;
+  background-size: cover; 
 }
 
 a,
