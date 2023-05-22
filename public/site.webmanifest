@@ -1,7 +1,6 @@
 {
-    "name": "Gatcha Game",
-    "short_name": "Gatcha Game",
-    "start-url": "/",
+    "name": "",
+    "short_name": "",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",

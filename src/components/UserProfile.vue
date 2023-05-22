@@ -21,7 +21,7 @@
               <p class="stat-text">{{ sendCount }}</p>
             </div>
             <div class="stat-item">
-              <p class="stat-text">Obitidas</p>
+              <p class="stat-text">Obtidas</p>
               <p class="stat-text">{{ getCount }}</p>
             </div>
             <div class="stat-item">
@@ -150,7 +150,7 @@ export default {
               const card = doc.data();
               cardNames.add(card.cardName);
             });
-            hasNarutoBadge.value = cardNames.size >= 26;
+            hasNarutoBadge.value = cardNames.size >= 30;
           })
           .catch((error) => {
             console.error('Error checking Naruto badge:', error);
@@ -166,7 +166,7 @@ export default {
               const card = doc.data();
               cardNames.add(card.cardName);
             });
-            hasDemonSlayerBadge.value = cardNames.size >= 16;
+            hasDemonSlayerBadge.value = cardNames.size >= 30;
           })
           .catch((error) => {
             console.error('Error checking Demon Slayer badge:', error);
@@ -181,7 +181,7 @@ export default {
           const card = doc.data();
           cardNames.add(card.cardName);
         });
-        hasAttackOnTitanBadge.value = cardNames.size >= 10;
+        hasAttackOnTitanBadge.value = cardNames.size >= 30;
       })
       .catch((error) => {
         console.error('Error checking Attack on Titan badge:', error);

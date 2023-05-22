@@ -117,6 +117,7 @@ export default {
 }
 
 .main-header {
+  background-color:#1e1e1e;
   display: flex;
   justify-content: space-between;
   align-items: center;

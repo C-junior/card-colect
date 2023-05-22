@@ -1,6 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- License: MIT. Made by undefinedWill Kelly -->
-<svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 8.5C15 10.433 13.433 12 11.5 12C9.567 12 8 10.433 8 8.5C8 6.567 9.567 5 11.5 5C13.433 5 15 6.567 15 8.5Z" fill="#860E0E"/>
-<path d="M17.6305 20H5.94623C5.54449 20 5.31716 19.559 5.56788 19.2451C6.68379 17.8479 9.29072 15 12 15C14.7275 15 17.0627 17.8864 18.0272 19.2731C18.2474 19.5897 18.0161 20 17.6305 20Z" fill="#860E0E" stroke="#860E0E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<svg width="683" height="683" viewBox="0 0 683 683" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_108_110" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="683" height="683">
+<path d="M0 0H682.667V682.667H0V0Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_108_110)">
+<path d="M662.667 341.333C662.667 518.801 518.8 662.667 341.333 662.667C163.863 662.667 20 518.801 20 341.333C20 163.863 163.863 20 341.333 20C518.8 20 662.667 163.863 662.667 341.333Z" stroke="#860E0E" stroke-width="40" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M469.867 298.488C469.867 369.475 412.323 427.022 341.334 427.022C270.342 427.022 212.799 369.475 212.799 298.488C212.799 227.503 270.342 169.956 341.334 169.956C412.323 169.956 469.867 227.503 469.867 298.488Z" stroke="#860E0E" stroke-width="40" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M149.617 599.233C159.897 502.43 241.807 427.022 341.333 427.022C440.863 427.022 522.771 502.436 533.047 599.236" stroke="#860E0E" stroke-width="40" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
 </svg>

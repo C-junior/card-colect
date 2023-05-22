@@ -1,6 +1,7 @@
 <template>
 <div class="shop-container">
-    <h1 class="title-page">Shop</h1>
+  <div class="coverbtn">
+    <h1 class="title-page">SHOP</h1></div>  
     <div class="item-row">
     <div v-for="item in itemsGem" :key="item.id" class="item-container">
     <div :class="{ 'special': item.special}">
@@ -340,9 +341,20 @@ const itemsGem = ref([
   align-items: center;
   padding: 20px;
 }
-
+.coverbtn{  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-image: url(../assets/coverbtn.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 18px 30px;
+}
 .title-page{
-  text-align: center;
+  position: relative;
+  top:-18px;
+  width: max-content;
   color: #831714;
  }
  .item-row {
@@ -357,6 +369,7 @@ const itemsGem = ref([
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end;
     padding: 20px;
     background-color: rgb(36, 36, 36);
     border-radius: 10px;

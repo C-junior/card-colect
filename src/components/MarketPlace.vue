@@ -1,6 +1,8 @@
 <template>
-    <div class="container-market">
-      <h1 class="title-page">Market</h1>
+    <div class="container-market">  
+      <div class="coverbtn">
+    <h1 class="title-page">MARKET</h1>
+  </div>  
       <ul class="card-list">
         <li class="card-item" v-for="(item, index) in marketItems" :key="index">
           <div class="card-container">
@@ -73,8 +75,28 @@
   </script>
   
   <style scoped>
-   .title-page{
-  text-align: center;
+  .container-market{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+
+  }
+  .coverbtn{  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-image: url(../assets/coverbtn.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 18px 30px;
+}
+.title-page{
+  position: relative;
+  top:-12px;
+  width: max-content;
+  margin: 0 auto;
   color: #831714;
  }
   .market-items {

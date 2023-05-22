@@ -1,7 +1,7 @@
 <template>
-  <div>
-   
-    <h2 class="title-page">Inventory</h2>
+  <div class="container-inventory">
+    <div class="coverbtn">
+    <h1 class="title-page">INVENTORY</h1></div> 
     
     <div>
     <input type="text" placeholder="Digite o nome da Carta" v-model="searchTerm" @input="searchCards"  >
@@ -440,6 +440,14 @@ export default {
 
 /* search style start*/
 /* Search bar */
+.container-inventory{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+
+  }
+
 input[type="text"] {
   width: 80%;
   padding: 12px 20px;
@@ -592,8 +600,21 @@ ul {
   display: flex;
   margin: auto;
  }
- .title-page{
-  text-align: center;
+ .coverbtn{  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-image: url(../assets/coverbtn.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding: 18px 22px;
+}
+.title-page{
+  position: relative;
+  top:-2px;
+  width: max-content;
+  margin: 0 auto;
   color: #831714;
  }
  .card-list {
