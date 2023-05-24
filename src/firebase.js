@@ -21,6 +21,22 @@ firebase.initializeApp(firebaseConfig);
 
 export const auth = firebase.auth();
 
+
+// try persist crds
+firebase.firestore().enablePersistence()
+  .catch((error) => {
+    if (error.code === 'failed-precondition') {
+      // Multiple tabs open, persistence can only be enabled in one tab at a time.
+      // ...
+    } else if (error.code === 'unimplemented') {
+      // The current browser does not support all of the
+      // features required to enable persistence.
+      // ...
+    }
+  });
+
+//end of persist cards
+
 //   }
  // try create a profile code
  export function useAuth() {
@@ -70,11 +86,27 @@ const messagesQuery = messagesCollection.orderBy('createdAt', 'desc').limit(12)
 const invetoryQuery = inventoryCollection.orderBy('createdAt', 'desc')
 export function useChat() {
   const messages = ref([]);
-  const unsubscribe = messagesQuery.onSnapshot(snapshot => {
-    messages.value = snapshot.docs
-      .map(doc => ({ id: doc.id, ...doc.data() }))
-      .reverse();
-  });
+  let unsubscribe;
+
+  const loadMessages = async () => {
+    try {
+      const snapshot = await messagesQuery.get();
+      messages.value = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .reverse();
+
+      unsubscribe = messagesQuery.onSnapshot((snapshot) => {
+        const newMessages = snapshot.docChanges()
+          .filter(change => change.type === 'added')
+          .map(change => ({ id: change.doc.id, ...change.doc.data() }))
+          .reverse();
+        messages.value = [...newMessages, ...messages.value];
+      });
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    }
+  };
+
   onUnmounted(unsubscribe);
            const naruto = 'https://api.jsonbin.io/v3/b/642c817dc0e7653a059dc7b1';
            const shingeki = 'https://api.jsonbin.io/v3/b/64385b2fc0e7653a05a3bf79';
@@ -109,10 +141,10 @@ export function useChat() {
 
 const sendMessage = image => {
   if (!isLogin.value) return;
-  const userDocRef = firestore.collection('userProfiles').doc(user.value.uid);
-  const now = Date.now();
-  userDocRef.get().then(doc => {
-    if (doc.exists) {
+    const userDocRef = firestore.collection('userProfiles').doc(user.value.uid);
+    const now = Date.now();
+    userDocRef.get().then(doc => {
+      if (doc.exists) {
       const sendCount = doc.data().sendCount || 0;
       const sendAvaliable = doc.data().sendAvaliable || 0;
       if (now < sendAvaliable) {
@@ -157,15 +189,15 @@ const sendMessage = image => {
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
         messagesRef.add(message)
-          .then(docRef => {
-            console.log(`Message written with ID: ${docRef.id}`);
+        .then(docRef => {
+          console.log(`Message written with ID: ${docRef.id}`);
             userDocRef.update({
               sendAvaliable: sendAvaliableNew,
               sendCount: sendCount + 1,
               lastsendTime: now
             });
           })
-          .catch(error => console.error(`Error adding message: ${error}`));
+           .catch(error => console.error(`Error adding message: ${error}`));
       });
     } else {
       userDocRef.set({ sendCount: 1 });
@@ -270,6 +302,6 @@ const sendMessage = image => {
           
 const inventoryRef = firebase.firestore().collection('inventory');
 
-  return { messages, sendMessage, messagesRef, getCard, inventoryRef };
+return { messages, loadMessages, sendMessage, messagesRef, getCard, inventoryRef };
 }
 export const currentUser = auth.user;

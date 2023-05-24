@@ -1,132 +1,135 @@
-
 <template>
   <div>
     <div class="top-nav">
-    <navbar />
-    <div class="profile-btn" v-if="isLogin">  <h5> {{ user.displayName }}</h5>    
-    </div> 
+      <navbar />
+      <div class="profile-btn" v-if="isLogin">
+        <h5>{{ user.displayName }}</h5>
+      </div>
     </div>
     <img v-if="dropbtnEnabled" class="dropbtn" :class="{ 'enabled': dropbtnEnabled }" src="../assets/btn.svg" alt="" @click="send">
     <p v-if="!dropbtnEnabled" class="loading-text">Waiting for data to be set...</p>
 
-
-    <br><br>
+    <br>
+    <!-- <div class="obtained-card" v-for="(card, index) in obtainedCards" :key="index">
+    <p>Player: {{ card.playerName }}</p>
+    <p>Card: {{ card.cardName }}</p>
+  </div> -->
+    <br>
     <div class="card-container">
-      
       <div v-for="(message, index) in messages" :key="index" class="card-row" :disabled="message.disabled" :class="{ 'disabled': message.disabled }">
-        <div @click="pegar(message)" >
+        <div @click="pegar(message)">
           <p class="cardname">{{ message.cardName }}</p>
           <br>
-          <img v-if="message.rarity === 'legendary'" class="frame" src="../assets/frame-legendary.png " alt="">
-          <img v-if="message.rarity === 'epic'" class="frame" src="../assets/frame-epics.png " alt="">
-          <img v-if="message.rarity === 'super-rare'" class="frame" src="../assets/frame-super-rare.png " alt="">
-          <img v-if="message.rarity === 'rare'" class="frame" src="../assets/frame-rare.png " alt="">
-          <img v-if="message.rarity === 'uncommon'" class="frame" src="../assets/frame-uncommon.png " alt="">
-          <img v-if="message.rarity === 'common'" class="frame" src="../assets/frame-common.png " alt="">
-          <img :src="message.cardImg" alt="card image">
+          <img v-if="message.rarity === 'legendary'" class="frame" src="../assets/frame-legendary.png" alt="">
+          <img v-if="message.rarity === 'epic'" class="frame" src="../assets/frame-epics.png" alt="">
+          <img v-if="message.rarity === 'super-rare'" class="frame" src="../assets/frame-super-rare.png" alt="">
+          <img v-if="message.rarity === 'rare'" class="frame" src="../assets/frame-rare.png" alt="">
+          <img v-if="message.rarity === 'uncommon'" class="frame" src="../assets/frame-uncommon.png" alt="">
+          <img v-if="message.rarity === 'common'" class="frame" src="../assets/frame-common.png" alt="">
+          <img :src="message.cardImg" alt="card image">         
         </div>
       </div>
     </div>
-    
- 
   </div>
 </template>
 
 <script>
 import Navbar from '../components/Login.vue';
-import { ref, onUnmounted, watchEffect } from 'vue'
-import { useAuth, useChat } from '@/firebase'
-
-
+import { ref, onBeforeUnmount, computed } from 'vue';
+import { useAuth, useChat } from '@/firebase';
+import { useStore } from '../store';
 
 export default {
   components: {
     Navbar
   },
   setup() {
-    // Initialize variables
-    const { user, isLogin } = useAuth()
-    const messages = ref([]);
-    const { sendMessage, messagesRef, getCard,  inventoryRef } = useChat()
-    const message = ref('')
-
+    const { user, isLogin } = useAuth();
+    const { sendMessage, messagesRef, getCard, inventoryRef } = useChat();
+    const message = ref('');
     const dropbtnEnabled = ref(false);
     let loadingTimeout;
+
+    const store = useStore();
+    const obtainedCards = computed(() => store.obtainedCards);
 
     loadingTimeout = setTimeout(() => {
       dropbtnEnabled.value = true;
     }, 2500);
 
-    onUnmounted(() => {
+    onBeforeUnmount(() => {
       clearTimeout(loadingTimeout);
     });
-    
-    watchEffect(onInvalidate => {
-      const unsubscribe = messagesRef.orderBy('createdAt', 'desc').onSnapshot(querySnapshot => {
-        const newMessages = [];
-        querySnapshot.forEach(doc => {
-          newMessages.push(doc.data())
-        });
-        messages.value = newMessages.splice(0, 12);
-      });
 
-      onInvalidate(() => {
-        // Unsubscribe from the listener when the component is unmounted
-        unsubscribe();
-      });
-    });
-  
-    
     const pegar = async (message) => {
-  // Check if the message has already been added to the inventory
-  const inventorySnapshot = await inventoryRef.where('cardId', '==', message.cardId).get();
-  if (inventorySnapshot.size > 0) {
-    console.log('Message has already been added to the inventory.');
-    return;
-  }
+      const inventorySnapshot = await inventoryRef.where('cardId', '==', message.cardId).get();
+      if (inventorySnapshot.size > 0) {
+        console.log('Message has already been added to the inventory.');
+        return;
+      }
 
-  // Check if the message has been disabled for 1 minute or more
-  if (message.createdAt && (new Date() - message.createdAt.toDate()) >= (1 * 20 * 1000)) {
-    message.disabled = true;
-  }
+      if (message.createdAt && (new Date() - message.createdAt.toDate()) >= (1 * 20 * 1000)) {
+        message.disabled = true;
+      }
 
-  // Disable the card if it hasn't already been disabled
-  if (!message.disabled) {
-    // Add the message to the inventory
-   // await inventoryRef.add({ cardId: message.cardId });
+      if (!message.disabled) {
+        message.disabled = true;
+        message.disabledAt = new Date();
 
-    // Disable the card
-    message.disabled = true;
-    message.disabledAt = new Date(); // Add the disabledAt property to the message
-    console.log("o valor é", await getCard(message));
-  }
-};
-    
-    // Send a message
+        const card = await getCard(message);
+       
+        // store.addObtainedCard({
+        //   playerName: message.playerName,
+        //   cardName: message.cardName
+        
+        // });
+
+      }
+    };
+
     const send = async () => {
- 
-  await sendMessage(message.value);
-  message.value = ''; // Clear the input field after sending
-};
+      await sendMessage(message.value);
+      message.value = '';
+    };
 
-    
-    // // Retrieve the messages from Firestore
-    // messagesRef.orderBy('createdAt', 'desc').onSnapshot(querySnapshot => {
-    //  const newMessages = [];
-    //   querySnapshot.forEach(doc => {
-    //     newMessages.push(doc.data())
-    //   });    
-    //   messages.value = newMessages.splice(0, 6);
-    // });
-    
-    
-  
-    return { user, isLogin, messages,  message, send , pegar, dropbtnEnabled,  inventoryRef };
-  }
-}
+    const messages = ref([]);
+
+    const unsubscribe = messagesRef.orderBy('createdAt', 'desc').onSnapshot(querySnapshot => {
+      const newMessages = [];
+      querySnapshot.forEach(doc => {
+        newMessages.push(doc.data());
+      });
+      messages.value.splice(0, messages.value.length, ...newMessages.splice(0, 12));
+    });
+
+    onBeforeUnmount(() => {
+      unsubscribe();
+    });
+
+    return {
+      user,
+      isLogin,
+      messages,
+      message,
+      send,
+      pegar,
+      dropbtnEnabled,
+      obtainedCards,
+      store,
+    };
+  },
+};
 </script>
 
 <style scoped>
+.legenda{
+  color: #191919;
+}
+
+.obtained-card {
+  padding: 2px;
+  margin:auto;
+}
 
 .dropbtn.enabled {
  filter: hue-rotate(120);
@@ -161,11 +164,10 @@ export default {
   place-items: center;
 }
 .card-row {
+  margin: auto;
   display: block;
   text-align: center;
   width: 250px;
-  margin-left: 20px;
-  margin-bottom: 20px;
   overflow:hidden;
 }
 @media (max-width: 769px) {
